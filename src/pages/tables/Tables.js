@@ -11,23 +11,10 @@ import Table from "../dashboard/components/Table/Table";
 import mock from "../dashboard/mock";
 
 const datatableData = [
-  ["Joe James", "Example Inc.", "Yonkers", "NY"],
-  ["John Walsh", "Example Inc.", "Hartford", "CT"],
-  ["Bob Herm", "Example Inc.", "Tampa", "FL"],
-  ["James Houston", "Example Inc.", "Dallas", "TX"],
-  ["Prabhakar Linwood", "Example Inc.", "Hartford", "CT"],
-  ["Kaui Ignace", "Example Inc.", "Yonkers", "NY"],
-  ["Esperanza Susanne", "Example Inc.", "Hartford", "CT"],
-  ["Christian Birgitte", "Example Inc.", "Tampa", "FL"],
-  ["Meral Elias", "Example Inc.", "Hartford", "CT"],
-  ["Deep Pau", "Example Inc.", "Yonkers", "NY"],
-  ["Sebastiana Hani", "Example Inc.", "Dallas", "TX"],
-  ["Marciano Oihana", "Example Inc.", "Yonkers", "NY"],
-  ["Brigid Ankur", "Example Inc.", "Dallas", "TX"],
-  ["Anna Siranush", "Example Inc.", "Yonkers", "NY"],
-  ["Avram Sylva", "Example Inc.", "Hartford", "CT"],
-  ["Serafima Babatunde", "Example Inc.", "Tampa", "FL"],
-  ["Gaston Festus", "Example Inc.", "Tampa", "FL"],
+  ["Làm đường", "Đường bê tông", "Có sức khoẻ", "Đồng Nai","300","11-04-2023","12-04-2023"],
+  ["Làm đường", "Đường bê tông", "Có sức khoẻ", "Đồng Nai","300","11-04-2023","12-04-2023"],
+  ["Làm đường", "Đường bê tông", "Có sức khoẻ", "Đồng Nai","300","11-04-2023","12-04-2023"],
+  
 ];
 
 export default function Tables() {
@@ -37,16 +24,16 @@ export default function Tables() {
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <MUIDataTable
-            title="Employee List"
+            title="Project List"
             data={datatableData}
-            columns={["Name", "Company", "City", "State"]}
+            columns={["Name", "Description", "Skill", "Location", "Quantity", "Start Day", "End Day"]}
             options={{
               filterType: "checkbox",
             }}
           />
         </Grid>
         <Grid item xs={12}>
-          <Widget title="Material-UI Table" upperTitle noBodyPadding>
+          <Widget title="Applied Student Table" upperTitle noBodyPadding>
             <Table data={mock.table} />
           </Widget>
         </Grid>
