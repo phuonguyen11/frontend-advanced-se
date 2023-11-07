@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { Grid } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 
@@ -6,37 +7,58 @@ import MUIDataTable from "mui-datatables";
 import PageTitle from "../../components/PageTitle";
 import Widget from "../../components/Widget";
 import Table from "../dashboard/components/Table/Table";
-
 // data
-import mock from "../dashboard/mock";
+import { getProject } from "../../api";
 
-const datatableData = [
-  ["Làm đường", "Đường bê tông", "Có sức khoẻ", "Đồng Nai","300","11-04-2023","12-04-2023"],
-  ["Làm đường", "Đường bê tông", "Có sức khoẻ", "Đồng Nai","300","11-04-2023","12-04-2023"],
-  ["Làm đường", "Đường bê tông", "Có sức khoẻ", "Đồng Nai","300","11-04-2023","12-04-2023"],
-  
-];
 
 export default function Tables() {
-  return (
+  const [projectData, setProjectData] = useState([]);
+
+  const getProjectData = async () => {
+    try {
+      const result = await getProject();
+      console.log(result, "aaaaa");
+      if(result !== undefined)
+      {
+        const arrays = [];
+        result.map(item => arrays.push([
+        item.name,
+        item.description,
+        item.location,
+        item.quantity,
+        item.start_date,
+        item.end_date,
+      ]));
+      setProjectData(arrays);
+      }
+
+    } catch (error) {
+      console.error("Error fetching project data", error);
+      throw error; // Re-throw the error to handle it outside if needed
+    }
+  }
+  
+  getProjectData();
+  
+ return (
     <>
-      <PageTitle title="Tables" />
+      <PageTitle title="Admin Board" />
       <Grid container spacing={4}>
         <Grid item xs={12}>
           <MUIDataTable
             title="Project List"
-            data={datatableData}
-            columns={["Name", "Description", "Skill", "Location", "Quantity", "Start Day", "End Day"]}
+            data={projectData}
+            columns={["Name", "Description",  "Location", "Quantity", "Start Day", "End Day"]}
             options={{
-              filterType: "checkbox",
+              filterType: "multiselect",
             }}
           />
         </Grid>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Widget title="Applied Student Table" upperTitle noBodyPadding>
             <Table data={mock.table} />
           </Widget>
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   );
