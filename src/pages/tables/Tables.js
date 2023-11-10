@@ -1,3 +1,5 @@
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
 import React from "react";
 import { useState, useEffect } from "react";
 import { Grid } from "@material-ui/core";
@@ -14,12 +16,19 @@ import Modal from 'react-modal';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import './styles.css';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+
+
 
 const customStyles = {
   content: {
     top: '50%',
     left: '50%',
-    right: 'auto',
+    right: '50%',
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
@@ -29,13 +38,16 @@ const customStyles = {
 // Modal.setAppElement('#yourAppElement');
 
 
+
 export default function Tables() {
   const [projectData, setProjectData] = useState([]);
-  const [selectedRow, setSelectedRow] = useState([]);
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [quantity, setQuantity] = useState("");
+  const [selectedRowIndex, setSelectedRowIndex] = useState(0);
+  const [startDate, setStartDate] = useState(new Date('2014-08-18T21:11:54'))
+  const [endDate, setEndDate] = useState(new Date('2014-08-18T21:11:54'))
 
   useEffect(() => {
     async function getProjectData() {
@@ -43,18 +55,7 @@ export default function Tables() {
         const result = await getProject();
         if(result !== undefined)
         {
-          const arrays = [];
-          result.map(item => arrays.push([
-          item.user_id,
-          item.id,
-          item.name,
-          item.description,
-          item.location,
-          item.quantity,
-          item.start_date,
-          item.end_date,
-        ]));
-        setProjectData(arrays);
+          setProjectData(result);
         }
     
       } catch (error) {
@@ -71,32 +72,25 @@ export default function Tables() {
 
     const handleSubmit = async () => {
       try {
+        const data = projectData[selectedRowIndex];
         const updatedData = {
-          id: selectedRow[1],
-          user_id: selectedRow[0],
+          id: data.id,
+          user_id: data.user_id,
           name: name,
           description: description,
           location: location,
           quantity: quantity,
-          start_date: selectedRow[6],
-          end_date: selectedRow[7],
+          start_date: startDate.toISOString(),
+          end_date: endDate.toISOString(),
         };
-        console.log(updatedData)
         const response = await updateProjectAPI(updatedData);
-        setProjectData(projectData.map(project => {
-          if(project[1] !== selectedRow[1]) {
-            return project;
+        setProjectData(projectData.map((project, index) => {
+          if(index === selectedRowIndex) {
+            return {
+              ...updatedData
+            }
           }
-          return [
-            selectedRow[0],
-            selectedRow[1],
-            name,
-            description,
-            location,
-            quantity,
-            selectedRow[6],
-            selectedRow[7]
-          ]
+          return project;
         }));
         handleClose();
         console.log(response)
@@ -118,7 +112,8 @@ export default function Tables() {
         style={customStyles}
         contentLabel="Example Modal"
       >        
-        <form>
+      <MuiPickersUtilsProvider utils={DateFnsUtils} spacing={2}>
+
         <Grid container spacing={2}>
           <Grid item xs={12}>
               <TextField value={name} onChange={(e) => setName(e.target.value)}  fullWidth label="Name" placeholder="Name" variant="outlined" multiline />
@@ -133,10 +128,34 @@ export default function Tables() {
             <TextField value={quantity} onChange={(e) => setQuantity(e.target.value)}  fullWidth label="Quantity" placeholder="Quantity" variant="outlined" />
           </Grid>
           <Grid item xs={6}>
-            <TextField  fullWidth label="Start Date" placeholder="Start Date" variant="outlined" />
+            <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                label="Start Date"
+                value={startDate}
+                onChange={setStartDate}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+              />
           </Grid>
           <Grid item xs={6}>
-            <TextField  fullWidth label="End Date" placeholder="End Date" variant="outlined" />
+            <KeyboardDatePicker
+              disableToolbar
+              variant="inline"
+              format="MM/dd/yyyy"
+              margin="normal"
+              id="date-picker-inline"
+              label="End Date"
+              value={endDate}
+              onChange={setEndDate}
+              KeyboardButtonProps={{
+                'aria-label': 'change date',
+              }}
+            />
           </Grid>
           <Grid item xs={12}>
             <Button onClick={handleSubmit} variant="contained" color="primary">
@@ -147,17 +166,36 @@ export default function Tables() {
             </Button>
           </Grid>
       </Grid>
-        </form>
+      </MuiPickersUtilsProvider>
+
       </Modal>
     )
   }
 
+  const getTableData = () => {
+    return projectData.map(item => {
+      return [
+        item.name,
+        item.description,
+        item.location,
+        item.quantity,
+        new Date(item.start_date).toLocaleDateString(),
+        new Date(item.end_date).toLocaleDateString(),
+      ]
+    })
+  }
+
   const openModalToEdit = (value, metaData) => {
-    setSelectedRow(metaData.rowData)
-    setName(metaData.rowData[2])
-    setDescription(metaData.rowData[3])
-    setLocation(metaData.rowData[4])
-    setQuantity(metaData.rowData[5])
+    console.log(value, metaData)
+    const rowIndex = metaData.rowIndex;
+    const data = projectData[rowIndex];
+    setSelectedRowIndex(rowIndex)
+    setName(data.name)
+    setDescription(data.description)
+    setLocation(data.location)
+    setQuantity(data.quantity)
+    setStartDate(new Date(data.start_date))
+    setEndDate(new Date(data.end_date))
     handleOpen();
   }
  return (
@@ -170,8 +208,8 @@ export default function Tables() {
           ?
           <MUIDataTable
             title="Project List"
-            data={projectData}
-            columns={[{"name": "user_id", options: {display: false}},{"name": "id", options: {display: false}},"Name", "Description",  "Location", "Quantity", "Start Day", "End Day", {
+            data={getTableData()}
+            columns={["Name", "Description",  "Location", "Quantity", "Start Day", "End Day", {
               label: "Actions",
               options: {
                   customBodyRender: (value, tableMeta, updateValue) => {
