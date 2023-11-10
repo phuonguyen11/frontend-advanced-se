@@ -11,40 +11,44 @@ import Table from "../dashboard/components/Table/Table";
 import { getProject } from "../../api";
 
 
+
 export default function Tables() {
   const [projectData, setProjectData] = useState([]);
-
-  const getProjectData = async () => {
-    try {
-      const result = await getProject();
-      console.log(result, "aaaaa");
-      if(result !== undefined)
-      {
-        const arrays = [];
-        result.map(item => arrays.push([
-        item.name,
-        item.description,
-        item.location,
-        item.quantity,
-        item.start_date,
-        item.end_date,
-      ]));
-      setProjectData(arrays);
-      }
-
-    } catch (error) {
-      console.error("Error fetching project data", error);
-      throw error; // Re-throw the error to handle it outside if needed
-    }
-  }
   
-  getProjectData();
+  useEffect(() => {
+    async function getProjectData() {
+      try {
+        const result = await getProject();
+        console.log(result, "aaaaa");
+        if(result !== undefined)
+        {
+          const arrays = [];
+          result.map(item => arrays.push([
+          item.name,
+          item.description,
+          item.location,
+          item.quantity,
+          item.start_date,
+          item.end_date,
+        ]));
+        setProjectData(arrays);
+        }
+    
+      } catch (error) {
+        console.error("Error fetching project data", error);
+        throw error; // Re-throw the error to handle it outside if needed
+      }  
+    }
+    getProjectData();
+    }, []);
   
  return (
     <>
       <PageTitle title="Admin Board" />
       <Grid container spacing={4}>
         <Grid item xs={12}>
+          {projectData
+          ?
           <MUIDataTable
             title="Project List"
             data={projectData}
@@ -53,6 +57,8 @@ export default function Tables() {
               filterType: "multiselect",
             }}
           />
+          :
+          <p><i>Loading...</i></p>}
         </Grid>
         {/* <Grid item xs={12}>
           <Widget title="Applied Student Table" upperTitle noBodyPadding>
