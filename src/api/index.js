@@ -9,3 +9,11 @@ export const getProject = async () => {
      return response.data;
 };
 
+
+
+export const updateProjectAPI = async (projectData) => {
+	const response = await axios.put(
+		`http://localhost:3000/project/${projectData.id}`, projectData
+	);
+	return response.data
+}
