@@ -6,7 +6,6 @@ import {
   withRouter,
 } from "react-router-dom";
 import classnames from "classnames";
-
 // styles
 import useStyles from "./styles";
 
@@ -17,7 +16,7 @@ import Sidebar from "../Sidebar";
 // pages
 import Dashboard from "../../pages/dashboard";
 import Typography from "../../pages/typography";
-import Notifications from "../../pages/notifications";
+// import Notifications from "../../pages/notifications";
 import Maps from "../../pages/maps";
 import Tables from "../../pages/tables";
 import Icons from "../../pages/icons";
@@ -25,7 +24,7 @@ import Charts from "../../pages/charts";
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
-
+import UniversityAdministratorStaff from "../../pages/universityAdministratorStaff/UniversityAdministratorSaff";
 function Layout(props) {
   var classes = useStyles();
 
@@ -47,7 +46,8 @@ function Layout(props) {
               <Route path="/app/dashboard" component={Dashboard} />
               <Route path="/app/typography" component={Typography} />
               <Route path="/app/tables" component={Tables} />
-              <Route path="/app/notifications" component={Notifications} />
+              {/* <Route path="/app/notifications" component={Notifications} /> */}
+              <Route path="/app/universityAdministratorStaff" component={UniversityAdministratorStaff} />
               <Route
                 exact
                 path="/app/ui"

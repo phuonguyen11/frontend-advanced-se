@@ -58,4 +58,7 @@ export const deleteProject = async (projectId) => {
 	}
   };
 
-
+  export const updateProjectChecked = async (project_id, isChecked) => {
+	const response = await axios.put(`https://gremer.azurewebsites.net/project/${project_id}/isChecked`, {isChecked});
+	return response.data
+}
