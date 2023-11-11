@@ -2,15 +2,16 @@ import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import React from "react";
 import { useState, useEffect } from "react";
-import { Grid } from "@material-ui/core";
+import { Grid, makeStyles } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
+import MuiAlert from '@material-ui/lab/Alert';
 
 // components
 import PageTitle from "../../components/PageTitle";
 import Widget from "../../components/Widget";
 import Table from "../dashboard/components/Table/Table";
 // data
-import { getProject, updateProjectAPI } from "../../api";
+import { getProject, updateProjectAPI, deleteProject, addProject, getUni, getAbility } from "../../api";
 
 import Modal from 'react-modal';
 import TextField from '@material-ui/core/TextField';
@@ -22,6 +23,19 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    position: 'absolute',
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+  },
+}));
 
 
 const customStyles = {
@@ -41,6 +55,9 @@ const customStyles = {
 
 export default function Tables() {
   const [projectData, setProjectData] = useState([]);
+  const [uniData, setUniData] = useState([]);
+  const [abilityData, setAbilityData] = useState([]);
+
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
@@ -48,6 +65,19 @@ export default function Tables() {
   const [selectedRowIndex, setSelectedRowIndex] = useState(0);
   const [startDate, setStartDate] = useState(new Date('2014-08-18T21:11:54'))
   const [endDate, setEndDate] = useState(new Date('2014-08-18T21:11:54'))
+  const [selectedRowData, setSelectedRowData] = useState([]);
+  const classes = useStyles();
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [isEdited, setIsEdited] = useState(false);
+  const [selectedUniversity, setSelectedUniversity] = useState('');
+
+  const handleUniversityChange = (event) => {
+    setSelectedUniversity(event.target.value);
+  };
+  
+
+
 
   useEffect(() => {
     async function getProjectData() {
@@ -64,7 +94,31 @@ export default function Tables() {
       }  
     }
     getProjectData();
-    }, []);
+    }, [isEdited]);
+
+
+    useEffect(() => {
+      async function getUniData() {
+        try {
+          const result = await getUni();
+          if(result !== undefined)
+          {
+            setUniData(result);
+          }
+      
+        } catch (error) {
+          console.error("Error fetching uni data", error);
+          throw error; // Re-throw the error to handle it outside if needed
+        }  
+      }
+      getUniData();
+      console.log(uniData, "aaaaa")
+      }, [openAdd]);
+  
+    
+  
+
+
 
     const handleRowClick = (rowData, rowMeta) => {
       console.log(rowData, rowMeta);
@@ -100,9 +154,54 @@ export default function Tables() {
       }
     };
 
+    const handleSubmitAdd = async (e) => {
+      e.preventDefault();
+      console.log(selectedUniversity);
+      const projectData = {
+      name: e.target.name.value,
+      description: e.target.description.value, 
+      location: e.target.location.value,
+      user_id: 1,
+      uni_ids: [selectedUniversity],
+      start_date: e.target.startDate.value,
+      end_date: e.target.endDate.value,
+      quantity: e.target.capacity.value,
+    };
+    await addProject(projectData);
+    setIsEdited(!isEdited);
+    setOpenAdd(false);
+    };
+
+    const handleDeleteRow = async () => {
+      if (selectedRowData.length > 0) {
+        try {
+          await Promise.all(
+            selectedRowData.map(async (item) => {
+              const projectIdToDelete = item[0]; // Assuming your project ID is in the first position
+              console.log(projectIdToDelete)
+              await deleteProject(projectIdToDelete);
+              setIsEdited(!isEdited);
+            })
+          );
+          setSelectedRowData([]);
+        } catch (error) {
+          console.error('Error deleting projects:', error);
+        }
+      }
+    };
+
+
+
+
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const handleCloseAdd = () =>
+    {
+       setOpenAdd(false);
+       setSelectedUniversity(null);
+    }
+
   
   const renderEditModal = () => {
     return (
@@ -113,7 +212,6 @@ export default function Tables() {
         contentLabel="Example Modal"
       >        
       <MuiPickersUtilsProvider utils={DateFnsUtils} spacing={2}>
-
         <Grid container spacing={2}>
           <Grid item xs={12}>
               <TextField value={name} onChange={(e) => setName(e.target.value)}  fullWidth label="Name" placeholder="Name" variant="outlined" multiline />
@@ -172,6 +270,69 @@ export default function Tables() {
     )
   }
 
+  const AddProjectModal = (
+    <div className={classes.paper}>
+      <h2 id="simple-modal-title">Add Project</h2>
+      <form onSubmit={handleSubmitAdd}>
+      <label for="lang">University</label>
+      <select name="university" id="lang"
+        value={selectedUniversity}
+        onChange={handleUniversityChange}
+        style={{
+          padding: '8px',
+          borderRadius: '4px',
+          border: '1px solid #ccc',
+          width: '250px', // Adjust the width as needed
+        }}      
+      >
+        {uniData.map(item => (
+          <option key={item.id} value={item.id}>
+            {item.name}
+          </option>
+        ))}
+      </select>
+        <TextField name="name" label="Name" variant="outlined" margin="normal" required fullWidth />
+        <TextField name="description" label="Description" variant="outlined" margin="normal" required fullWidth />
+        <TextField name="location" label="Location" variant="outlined" margin="normal" required fullWidth />
+        <TextField name="capacity" label="Quantity" variant="outlined" margin="normal" type="number" required fullWidth />
+        <TextField
+          name="startDate"
+          label="Start Date"
+          variant="outlined"
+          margin="normal"
+          type="datetime-local"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          required
+          fullWidth
+        />
+        <TextField
+          name="endDate"
+          label="End Date"
+          variant="outlined"
+          margin="normal"
+          type="datetime-local"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          required
+          fullWidth
+        />
+        <div style={{display: 'flex'}}>
+        <Button type="submit" variant="contained" color="primary" style={{marginRight: '10px'}}  onClick={()=>{setIsEdited(!isEdited);}}>
+          Submit
+        </Button>
+        <Button  variant="contained" color="primary" onClick={handleCloseAdd}>
+              Close
+            </Button>
+            </div>
+
+      </form>
+    </div>
+  );
+
+
   const getTableData = () => {
     return projectData.map(item => {
       return [
@@ -203,6 +364,27 @@ export default function Tables() {
       {renderEditModal()}
       <PageTitle title="Admin Board" />
       <Grid container spacing={4}>
+      <Grid item xs={12}>
+        <Button variant="contained" color="secondary" onClick={() => {setOpenAdd(true);}}
+        style={{marginRight: '10px'}}
+        >Add Project</Button>
+        {/* <Modal
+        open={openAdd}
+        onClose={() => {setOpenAdd(false);}}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+        >
+        {AddProjectModal}
+        </Modal> */}
+        
+        <Modal
+        isOpen={openAdd}
+        onRequestClose={handleCloseAdd}
+        >        
+        {AddProjectModal}
+        </Modal>
+        </Grid>
+
         <Grid item xs={12}>
           {projectData
           ?
@@ -218,7 +400,16 @@ export default function Tables() {
                           Edit
                       </button>
                     )
-                  }
+                  },
+                  onRowsSelect: (currentRowsSelected, allRowsSelected) => {
+                    setSelectedRowData((prev) => [
+                      ...prev,
+                      ...currentRowsSelected.map((selectedRow) => projectData[selectedRow.dataIndex])
+                    ]);
+                    console.log(selectedRowData.length, "hihiihi");
+                  },
+                onRowsDelete: handleDeleteRow,
+    
               }
           }]}
             options={{
