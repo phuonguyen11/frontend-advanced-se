@@ -18,3 +18,13 @@ export const deleteProject = async (projectId) => {
 	  throw error;
 	}
   };
+
+  export const addProject = async (projectData) => {
+	try {
+		const response = await axios.post(`http://localhost:7789/project`, projectData);
+		console.log(response.data.message); // Log the success message
+	} catch (error) {
+	  console.error('Error creating project');
+	  throw error;
+	}
+  };

@@ -10,7 +10,7 @@ import MUIDataTable from "mui-datatables";
 // components
 import PageTitle from "../../components/PageTitle";
 // data
-import { getProject, deleteProject } from "../../api";
+import { getProject, deleteProject, addProject } from "../../api";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -40,18 +40,25 @@ export default function Tables() {
   const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [isEdited, setIsEdited] = useState(false);
 
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Name:', e.target.name.value);
-    console.log('Location:', e.target.location.value);
-    console.log('Capacity:', e.target.capacity.value);
-    console.log('StartDate:', e.target.startDate.value);
-    console.log('EndDate:', e.target.endDate.value);
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      const projectData = {
+      name: e.target.name.value,
+      description: e.target.description.value, 
+      location: e.target.location.value,
+      user_id: 1,
+      uni_ids: [1, 2],
+      start_date: e.target.startDate.value,
+      end_date: e.target.endDate.value,
+      quantity: e.target.capacity.value,
+    };
+    await addProject(projectData);
+    setIsEdited(!isEdited);
+    setOpenAdd(false);
   };
-
-  const handleEdit = () => 
+    const handleEdit = () => 
   {
     if(selectedRowData.length !== 1)
     {
@@ -90,11 +97,10 @@ export default function Tables() {
           InputLabelProps={{
             shrink: true,
           }}
-
           required
           fullWidth
         />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
+        <Button type="submit" variant="contained" color="primary" fullWidth onClick={()=>{setIsEdited(!isEdited);}}>
           Submit
         </Button>
       </form>
@@ -167,7 +173,7 @@ export default function Tables() {
       }  
     }
     getProjectData();
-    }, []);
+    }, [isEdited]);
 
     const handleDeleteRow = async () => {
       if (selectedRowData.length > 0) {
@@ -176,6 +182,7 @@ export default function Tables() {
             selectedRowData.map(async (item) => {
               const projectIdToDelete = item[0]; // Assuming your project ID is in the first position
               await deleteProject(projectIdToDelete);
+              setIsEdited(!isEdited);
             })
           );
           setSelectedRowData([]);
