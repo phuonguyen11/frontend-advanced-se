@@ -136,7 +136,7 @@ export default function Header(props) {
           )}
         </IconButton>
         <Typography variant="h6" weight="medium" className={classes.logotype}>
-          React Material Admin
+          ABC's Green Summer Tool
         </Typography>
         <div className={classes.grow} />
         <div

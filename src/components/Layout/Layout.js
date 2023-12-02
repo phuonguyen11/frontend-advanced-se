@@ -6,7 +6,6 @@ import {
   withRouter,
 } from "react-router-dom";
 import classnames from "classnames";
-
 // styles
 import useStyles from "./styles";
 
@@ -26,7 +25,6 @@ import UniversityAdministratorStaff from "../../pages/universityAdministratorSta
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
-
 function Layout(props) {
   var classes = useStyles();
 
