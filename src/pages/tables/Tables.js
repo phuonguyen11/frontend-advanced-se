@@ -4,14 +4,9 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { Grid, makeStyles } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
-import MuiAlert from '@material-ui/lab/Alert';
 
-// components
 import PageTitle from "../../components/PageTitle";
-import Widget from "../../components/Widget";
-import Table from "../dashboard/components/Table/Table";
-// data
-import { getProject, updateProjectAPI, deleteProject, addProject, getUni, getAbility } from "../../api";
+import { getProject, updateProjectAPI, deleteProject, addProject, getUni } from "../../api";
 
 import Modal from 'react-modal';
 import TextField from '@material-ui/core/TextField';
@@ -19,7 +14,6 @@ import Button from '@material-ui/core/Button';
 import './styles.css';
 import {
   MuiPickersUtilsProvider,
-  KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 
@@ -56,7 +50,6 @@ const customStyles = {
 export default function Tables() {
   const [projectData, setProjectData] = useState([]);
   const [uniData, setUniData] = useState([]);
-  const [abilityData, setAbilityData] = useState([]);
 
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
@@ -68,14 +61,13 @@ export default function Tables() {
   const [selectedRowData, setSelectedRowData] = useState([]);
   const classes = useStyles();
   const [openAdd, setOpenAdd] = useState(false);
-  const [openSnackBar, setOpenSnackBar] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
   const [selectedUniversity, setSelectedUniversity] = useState('');
 
   const handleUniversityChange = (event) => {
     setSelectedUniversity(event.target.value);
   };
-  
+
 
 
 
@@ -83,83 +75,82 @@ export default function Tables() {
     async function getProjectData() {
       try {
         const result = await getProject();
-        if(result !== undefined)
-        {
+        if (result !== undefined) {
           setProjectData(result);
         }
-    
+
       } catch (error) {
         console.error("Error fetching project data", error);
-        throw error; // Re-throw the error to handle it outside if needed
-      }  
+        throw error;
+      }
     }
     getProjectData();
-    }, [isEdited]);
+  }, []);
 
 
-    useEffect(() => {
-      async function getUniData() {
-        try {
-          const result = await getUni();
-          if(result !== undefined)
-          {
-            setUniData(result);
-          }
-      
-        } catch (error) {
-          console.error("Error fetching uni data", error);
-          throw error; // Re-throw the error to handle it outside if needed
-        }  
-      }
-      getUniData();
-      console.log(uniData, "aaaaa")
-      }, [openAdd]);
-  
-    
-  
-
-
-
-    const handleRowClick = (rowData, rowMeta) => {
-      console.log(rowData, rowMeta);
-    };
-
-    const handleSubmit = async () => {
+  useEffect(() => {
+    async function getUniData() {
       try {
-        const data = projectData[selectedRowIndex];
-        const updatedData = {
-          id: data.id,
-          user_id: data.user_id,
-          name: name,
-          description: description,
-          location: location,
-          quantity: quantity,
-          start_date: startDate.toISOString(),
-          end_date: endDate.toISOString(),
-        };
-        const response = await updateProjectAPI(updatedData);
-        setProjectData(projectData.map((project, index) => {
-          if(index === selectedRowIndex) {
-            return {
-              ...updatedData
-            }
+        const result = await getUni();
+        if (result !== undefined) {
+          setUniData(result);
+        }
+
+      } catch (error) {
+        console.error("Error fetching uni data", error);
+        throw error; // Re-throw the error to handle it outside if needed
+      }
+    }
+    getUniData();
+    console.log(uniData, "aaaaa")
+  }, []);
+
+
+
+
+
+
+  // const handleRowClick = (rowData, rowMeta) => {
+  //   console.log(rowData, rowMeta);
+  // };
+
+  const handleSubmit = async () => {
+    console.log('handle submit')
+    try {
+      const data = projectData[selectedRowIndex];
+      const updatedData = {
+        id: data.id,
+        user_id: data.user_id,
+        name: name,
+        description: description,
+        location: location,
+        quantity: quantity,
+        start_date: startDate.toISOString(),
+        end_date: endDate.toISOString(),
+      };
+      const response = await updateProjectAPI(updatedData);
+      setProjectData(projectData.map((project, index) => {
+        if (index === selectedRowIndex) {
+          return {
+            ...updatedData
           }
-          return project;
-        }));
-        handleClose();
-        console.log(response)
-      }
-      catch{
+        }
+        return project;
+      }));
+      handleClose();
+      console.log(response)
+    }
+    catch {
 
-      }
-    };
+    }
+  };
 
-    const handleSubmitAdd = async (e) => {
-      e.preventDefault();
-      console.log(selectedUniversity);
-      const projectData = {
+  const handleSubmitAdd = async (e) => {
+    e.preventDefault();
+    console.log(selectedUniversity);
+    const projectData = {
       name: e.target.name.value,
-      description: e.target.description.value, 
+      description: e.target.description.value,
       location: e.target.location.value,
       user_id: 1,
       uni_ids: [selectedUniversity],
@@ -170,63 +161,64 @@ export default function Tables() {
     await addProject(projectData);
     setIsEdited(!isEdited);
     setOpenAdd(false);
-    };
+  };
 
-    const handleDeleteRow = async () => {
-      if (selectedRowData.length > 0) {
-        try {
-          await Promise.all(
-            selectedRowData.map(async (item) => {
-              const projectIdToDelete = item[0]; // Assuming your project ID is in the first position
-              console.log(projectIdToDelete)
-              await deleteProject(projectIdToDelete);
-              setIsEdited(!isEdited);
-            })
-          );
-          setSelectedRowData([]);
-        } catch (error) {
-          console.error('Error deleting projects:', error);
-        }
+  const handleDeleteRow = async () => {
+    if (selectedRowData.length > 0) {
+      try {
+        await Promise.all(
+          selectedRowData.map(async (item) => {
+            const projectIdToDelete = item[0]; // Assuming your project ID is in the first position
+            console.log(projectIdToDelete)
+            await deleteProject(projectIdToDelete);
+            setIsEdited(!isEdited);
+          })
+        );
+        setSelectedRowData([]);
+      } catch (error) {
+        console.error('Error deleting projects:', error);
       }
-    };
-
-
-
-
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
-    const handleCloseAdd = () =>
-    {
-       setOpenAdd(false);
-       setSelectedUniversity(null);
     }
+  };
 
-  
+
+
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+    setSelectedUniversity(null);
+  }
+
+
   const renderEditModal = () => {
+    console.log('startDate', startDate)
     return (
       <Modal
         isOpen={open}
         onRequestClose={handleClose}
         style={customStyles}
         contentLabel="Example Modal"
-      >        
-      <MuiPickersUtilsProvider utils={DateFnsUtils} spacing={2}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-              <TextField value={name} onChange={(e) => setName(e.target.value)}  fullWidth label="Name" placeholder="Name" variant="outlined" multiline />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField value={description} onChange={(e) => setDescription(e.target.value)}  fullWidth label="Description" placeholder="Description" variant="outlined" multiline />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField value={location} onChange={(e) => setLocation(e.target.value)} fullWidth label="Location" placeholder="Location" variant="outlined" />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField value={quantity} onChange={(e) => setQuantity(e.target.value)}  fullWidth label="Quantity" placeholder="Quantity" variant="outlined" />
-          </Grid>
-          <Grid item xs={6}>
-            <KeyboardDatePicker
+      >
+        <h2 id="simple-modal-title">Update Project</h2>
+        <MuiPickersUtilsProvider utils={DateFnsUtils} spacing={2}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField value={name} onChange={(e) => setName(e.target.value)} fullWidth label="Name" placeholder="Name" variant="outlined" multiline />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField value={description} onChange={(e) => setDescription(e.target.value)} fullWidth label="Description" placeholder="Description" variant="outlined" multiline />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField value={location} onChange={(e) => setLocation(e.target.value)} fullWidth label="Location" placeholder="Location" variant="outlined" />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField value={quantity} onChange={(e) => setQuantity(e.target.value)} fullWidth label="Quantity" placeholder="Quantity" variant="outlined" />
+            </Grid>
+            <Grid item xs={6}>
+              <KeyboardDatePicker
                 disableToolbar
                 variant="inline"
                 format="MM/dd/yyyy"
@@ -235,36 +227,32 @@ export default function Tables() {
                 label="Start Date"
                 value={startDate}
                 onChange={setStartDate}
-                KeyboardButtonProps={{
-                  'aria-label': 'change date',
-                }}
+                KeyboardButtonProps={{'aria-label': 'change date',}}
               />
+            </Grid>
+            <Grid item xs={6}>
+              <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                label="End Date"
+                value={endDate}
+                onChange={setEndDate}
+                KeyboardButtonProps={{'aria-label': 'change date',}}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button onClick={handleSubmit} variant="contained" color="primary">
+                Update
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleClose}>
+                Cancel
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              format="MM/dd/yyyy"
-              margin="normal"
-              id="date-picker-inline"
-              label="End Date"
-              value={endDate}
-              onChange={setEndDate}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <Button onClick={handleSubmit} variant="contained" color="primary">
-              Submit
-            </Button>
-            <Button  variant="contained" color="primary" onClick={handleClose}>
-              Close
-            </Button>
-          </Grid>
-      </Grid>
-      </MuiPickersUtilsProvider>
+        </MuiPickersUtilsProvider>
 
       </Modal>
     )
@@ -274,23 +262,23 @@ export default function Tables() {
     <div className={classes.paper}>
       <h2 id="simple-modal-title">Add Project</h2>
       <form onSubmit={handleSubmitAdd}>
-      <label for="lang">University</label>
-      <select name="university" id="lang"
-        value={selectedUniversity}
-        onChange={handleUniversityChange}
-        style={{
-          padding: '8px',
-          borderRadius: '4px',
-          border: '1px solid #ccc',
-          width: '250px', // Adjust the width as needed
-        }}      
-      >
-        {uniData.map(item => (
-          <option key={item.id} value={item.id}>
-            {item.name}
-          </option>
-        ))}
-      </select>
+        <label for="lang">University</label>
+        <select name="university" id="lang"
+          value={selectedUniversity}
+          onChange={handleUniversityChange}
+          style={{
+            padding: '8px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            width: '250px', // Adjust the width as needed
+          }}
+        >
+          {uniData.map(item => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+        </select>
         <TextField name="name" label="Name" variant="outlined" margin="normal" required fullWidth />
         <TextField name="description" label="Description" variant="outlined" margin="normal" required fullWidth />
         <TextField name="location" label="Location" variant="outlined" margin="normal" required fullWidth />
@@ -301,9 +289,7 @@ export default function Tables() {
           variant="outlined"
           margin="normal"
           type="datetime-local"
-          InputLabelProps={{
-            shrink: true,
-          }}
+          InputLabelProps={{shrink: true,}}
           required
           fullWidth
         />
@@ -313,20 +299,18 @@ export default function Tables() {
           variant="outlined"
           margin="normal"
           type="datetime-local"
-          InputLabelProps={{
-            shrink: true,
-          }}
+          InputLabelProps={{shrink: true,}}
           required
           fullWidth
         />
-        <div style={{display: 'flex'}}>
-        <Button type="submit" variant="contained" color="primary" style={{marginRight: '10px'}}  onClick={()=>{setIsEdited(!isEdited);}}>
-          Submit
-        </Button>
-        <Button  variant="contained" color="primary" onClick={handleCloseAdd}>
-              Close
-            </Button>
-            </div>
+        <div style={{ display: 'flex' }}>
+          <Button type="submit" variant="contained" color="primary" style={{ marginRight: '10px' }} onClick={() => { setIsEdited(!isEdited); }}>
+            Submit
+          </Button>
+          <Button variant="contained" color="primary" onClick={handleCloseAdd}>
+            Close
+          </Button>
+        </div>
 
       </form>
     </div>
@@ -334,6 +318,7 @@ export default function Tables() {
 
 
   const getTableData = () => {
+    console.log()
     return projectData.map(item => {
       return [
         item.name,
@@ -347,9 +332,12 @@ export default function Tables() {
   }
 
   const openModalToEdit = (value, metaData) => {
-    console.log(value, metaData)
+    console.log('openModalToEdit')
+    console.log('value', value)
+    console.log('metaData', metaData)
     const rowIndex = metaData.rowIndex;
     const data = projectData[rowIndex];
+    console.log({ data })
     setSelectedRowIndex(rowIndex)
     setName(data.name)
     setDescription(data.description)
@@ -359,45 +347,38 @@ export default function Tables() {
     setEndDate(new Date(data.end_date))
     handleOpen();
   }
- return (
+  return (
     <>
       {renderEditModal()}
-      <PageTitle title="Admin Board" />
+      <PageTitle title="Community" />
       <Grid container spacing={4}>
-      <Grid item xs={12}>
-        <Button variant="contained" color="secondary" onClick={() => {setOpenAdd(true);}}
-        style={{marginRight: '10px'}}
-        >Add Project</Button>
-        {/* <Modal
-        open={openAdd}
-        onClose={() => {setOpenAdd(false);}}
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
-        >
-        {AddProjectModal}
-        </Modal> */}
-        
-        <Modal
-        isOpen={openAdd}
-        onRequestClose={handleCloseAdd}
-        >        
-        {AddProjectModal}
-        </Modal>
+        <Grid item xs={12}>
+          <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
+            style={{ marginRight: '10px' }}
+          >Add Project</Button>
+
+
+          <Modal
+            isOpen={openAdd}
+            onRequestClose={handleCloseAdd}
+          >
+            {AddProjectModal}
+          </Modal>
         </Grid>
 
         <Grid item xs={12}>
           {projectData
-          ?
-          <MUIDataTable
-            title="Project List"
-            data={getTableData()}
-            columns={["Name", "Description",  "Location", "Quantity", "Start Day", "End Day", {
-              label: "Actions",
-              options: {
+            ?
+            <MUIDataTable
+              title="Project List"
+              data={getTableData()}
+              columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
+                label: "Actions",
+                options: {
                   customBodyRender: (value, tableMeta, updateValue) => {
                     return (
-                      <button  onClick={() => openModalToEdit(value, tableMeta) }>
-                          Edit
+                      <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
+                        Edit
                       </button>
                     )
                   },
@@ -408,16 +389,16 @@ export default function Tables() {
                     ]);
                     console.log(selectedRowData.length, "hihiihi");
                   },
-                onRowsDelete: handleDeleteRow,
-    
-              }
-          }]}
-            options={{
-              filterType: "multiselect",
-            }}
-          />
-          :
-          <p><i>Loading...</i></p>}
+                  onRowsDelete: handleDeleteRow,
+
+                }
+              }]}
+              options={{
+                filterType: "multiselect",
+              }}
+            />
+            :
+            <p><i>Loading...</i></p>}
         </Grid>
         {/* <Grid item xs={12}>
           <Widget title="Applied Student Table" upperTitle noBodyPadding>

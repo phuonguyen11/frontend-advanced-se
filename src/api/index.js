@@ -30,7 +30,7 @@ export const getAbility = async () => {
 
 export const updateProjectAPI = async (projectData) => {
 	const response = await axios.put(
-		`https://gremer.azurewebsites.net/project/
+		`https://gremer.azurewebsites.net/project
 		`, projectData
 	);
 	return response.data
@@ -61,4 +61,9 @@ export const deleteProject = async (projectId) => {
   export const updateProjectChecked = async (project_id, isChecked) => {
 	const response = await axios.put(`https://gremer.azurewebsites.net/project/${project_id}/isChecked`, {isChecked});
 	return response.data
+}
+
+export const getProjectUnis = async () => {
+	const response = await axios.get(`https://gremer.azurewebsites.net/project/project-unis`);
+	return response.data 
 }
