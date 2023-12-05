@@ -41,7 +41,7 @@ function Login(props) {
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
         <img src={logo} alt="logo" className={classes.logotypeImage} />
-        <Typography className={classes.logotypeText}>Material Admin</Typography>
+        <Typography className={classes.logotypeText}>ABC TEAM</Typography>
       </div>
       <div className={classes.formContainer}>
         <div className={classes.form}>
@@ -261,7 +261,7 @@ function Login(props) {
           )}
         </div>
         <Typography color="primary" className={classes.copyright}>
-          © 2014-2019 Flatlogic, LLC. All rights reserved.
+          © 2023 ABC TEAM. All rights reserved.
         </Typography>
       </div>
     </Grid>
