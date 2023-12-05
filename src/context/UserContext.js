@@ -67,6 +67,9 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
         if (!!loginData) {
           localStorage.setItem("id_token", loginData.accessToken);
           localStorage.setItem("role", loginData.role);
+          localStorage.setItem("user_id", loginData.id);
+          localStorage.setItem("uni_id", loginData.uni_id);
+
 
           dispatch({ type: "LOGIN_SUCCESS" });
           setError(null);
@@ -76,6 +79,7 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
         }
       } catch (err) {
         localStorage.removeItem("id_token");
+
         // dispatch({ type: "LOGIN_FAILURE" });
         setError(true);
         setIsLoading(false);
