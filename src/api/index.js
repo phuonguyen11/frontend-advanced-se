@@ -1,25 +1,22 @@
 import axios from "axios";
 
 //call api from backend
-// export const loginUserAPI = async (email, password) => {
-//   try {
-//     const response = await axios.post(`http://localhost:7789/sessions/login`, {
-//       email: email,
-//       password: password,
-//     });
-//     return response.data;
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
+const getAccessTokenHeader = () => {
+  return {
+    "access-token": localStorage.getItem("id_token"),
+  };
+};
 
 export const getProject = async () => {
   const response = await axios.get(
     // `https://abc-summer.azurewebsites.net/project/
     // `
-    `https://abc-summer.azurewebsites.net/projects`,
+    `https://abc-summer.azurewebsites.net/projects/me`,
+    {
+      headers: getAccessTokenHeader(),
+    },
   );
-  return response.data;
+  return response.data.data;
 };
 
 export const getUni = async () => {
@@ -59,28 +56,37 @@ export const loginUserAPI = async (email, password) => {
 export const registerUserAPI = async (userData) => {
   try {
     const response = await axios.post(
-      `https://abc-summer.azurewebsites.net/users/signup`, userData);
+      `https://abc-summer.azurewebsites.net/users/signup`,
+      userData,
+    );
     return response.data;
   } catch (err) {
     console.log(err);
     throw err;
   }
-}
+};
 
 export const updateProjectAPI = async (projectData) => {
   const response = await axios.put(
     `https://abc-summer.azurewebsites.net/projects
 		`,
     projectData,
+    {
+      headers: getAccessTokenHeader(),
+    },
   );
   return response.data;
 };
 
 export const deleteProject = async (projectId) => {
   try {
-    const response =
-      await axios.delete(`https://abc-summer.azurewebsites.net/projects/
-		${projectId}`);
+    const response = await axios.delete(
+      `https://abc-summer.azurewebsites.net/projects/
+		${projectId}`,
+      {
+        headers: getAccessTokenHeader(),
+      },
+    );
     console.log(response.data.message); // Log the success message
   } catch (error) {
     console.error("Error deleting project:", error);
@@ -94,6 +100,9 @@ export const addProject = async (projectData) => {
       `https://abc-summer.azurewebsites.net/projects
 		`,
       projectData,
+      {
+        headers: getAccessTokenHeader(),
+      },
     );
     console.log(response.data.message); // Log the success message
   } catch (error) {
@@ -104,8 +113,11 @@ export const addProject = async (projectData) => {
 
 export const updateProjectChecked = async (project_id, isChecked) => {
   const response = await axios.put(
-    `https://abc-summer.azurewebsites.net/project/${project_id}/isChecked`,
+    `https://abc-summer.azurewebsites.net/projects/isChecked/${project_id}`,
     { isChecked },
+    {
+      headers: getAccessTokenHeader(),
+    },
   );
   return response.data;
 };
