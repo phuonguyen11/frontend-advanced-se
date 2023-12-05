@@ -19,6 +19,18 @@ export const getProject = async () => {
   return response.data.data;
 };
 
+export const getAllProjectsOfAllUnis = async () => {
+  const response = await axios.get(
+    // `https://abc-summer.azurewebsites.net/project/
+    // `
+    `https://abc-summer.azurewebsites.net/projects`,
+    {
+      headers: getAccessTokenHeader(),
+    },
+  );
+  return response.data;
+};
+
 export const getUni = async () => {
   const response = await axios.get(
     // `https://abc-summer.azurewebsites.net/uni/
