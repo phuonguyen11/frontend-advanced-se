@@ -1,5 +1,5 @@
 import React from "react";
-
+import { loginUserAPI } from "../api";
 var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
 
@@ -49,28 +49,41 @@ export { UserProvider, useUserState, useUserDispatch, loginUser, signOut };
 
 // ###########################################################
 
+function signOut(dispatch, history) {
+  localStorage.removeItem("id_token");
+  dispatch({ type: "SIGN_OUT_SUCCESS" });
+  history.push("/login");
+}
 function loginUser(dispatch, login, password, history, setIsLoading, setError) {
   setError(false);
   setIsLoading(true);
 
   if (!!login && !!password) {
-    setTimeout(() => {
-      localStorage.setItem("id_token", "1");
-      dispatch({ type: "LOGIN_SUCCESS" });
-      setError(null);
-      setIsLoading(false);
+    console.log(login + " " + password);
+    setTimeout(async () => {
+      try {
+        const loginData = await loginUserAPI(login, password);
+        console.log(loginData);
+        if (loginData.code === 200) {
+          console.log(loginData.body.user.role);
+          localStorage.setItem("id_token", loginData.body.user.role);
 
-      history.push("/app/dashboard");
+          dispatch({ type: "LOGIN_SUCCESS" });
+          setError(null);
+          setIsLoading(false);
+          history.push("tables");
+
+        }
+      } catch (err) {
+        localStorage.removeItem("id_token");
+        // dispatch({ type: "LOGIN_FAILURE" });
+        setError(true);
+        setIsLoading(false);
+      }
     }, 2000);
   } else {
     dispatch({ type: "LOGIN_FAILURE" });
     setError(true);
     setIsLoading(false);
   }
-}
-
-function signOut(dispatch, history) {
-  localStorage.removeItem("id_token");
-  dispatch({ type: "SIGN_OUT_SUCCESS" });
-  history.push("/login");
 }

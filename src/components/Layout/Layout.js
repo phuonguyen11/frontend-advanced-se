@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Route,
-  Switch,
-  Redirect,
-  withRouter,
-} from "react-router-dom";
+import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 import classnames from "classnames";
 // styles
 import useStyles from "./styles";
@@ -43,9 +38,10 @@ function Layout(props) {
           >
             <div className={classes.fakeToolbar} />
             <Switch>
-              <Route path="/app/dashboard" component={Dashboard} />
-              <Route path="/app/typography" component={Typography} />
+              {/* <Route path="/app/dashboard" component={Dashboard} />
+              <Route path="/app/typography" component={Typography} /> */}
               <Route path="/app/tables" component={Tables} />
+
               {/* <Route path="/app/notifications" component={Notifications} /> */}
               <Route path="/app/universityAdministratorStaff" component={UniversityAdministratorStaff} />
               <Route
