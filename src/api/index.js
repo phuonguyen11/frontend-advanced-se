@@ -32,12 +32,16 @@ export const addProject = async (projectData) => {
 };
 export const loginUserAPI = async (email, password) => {
   try {
-    const response = await axios.post(`http://localhost:3001/sessions/login`, {
-      email: email,
-      password: password,
-    });
+    const response = await axios.post(
+      `https://abc-summer.azurewebsites.net/users/login`,
+      {
+        email: email,
+        password: password,
+      },
+    );
     return response.data;
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };

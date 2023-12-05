@@ -35,7 +35,8 @@ function Login(props) {
   var [nameValue, setNameValue] = useState("");
   var [loginValue, setLoginValue] = useState("");
   var [passwordValue, setPasswordValue] = useState("");
-
+  var [userRole, setUserRole] = useState(null);
+  var [userUni, setUserUni] = useState(null)
   return (
     <Grid container className={classes.container}>
       <div className={classes.logotypeContainer}>
@@ -82,7 +83,7 @@ function Login(props) {
                   },
                 }}
                 value={loginValue}
-                onChange={e => setLoginValue(e.target.value)}
+                onChange={(e) => setLoginValue(e.target.value)}
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
@@ -97,7 +98,7 @@ function Login(props) {
                   },
                 }}
                 value={passwordValue}
-                onChange={e => setPasswordValue(e.target.value)}
+                onChange={(e) => setPasswordValue(e.target.value)}
                 margin="normal"
                 placeholder="Password"
                 type="password"
@@ -119,7 +120,6 @@ function Login(props) {
                         props.history,
                         setIsLoading,
                         setError,
-                        
                       )
                     }
                     variant="contained"
@@ -161,7 +161,7 @@ function Login(props) {
                   },
                 }}
                 value={nameValue}
-                onChange={e => setNameValue(e.target.value)}
+                onChange={(e) => setNameValue(e.target.value)}
                 margin="normal"
                 placeholder="Full Name"
                 type="email"
@@ -176,7 +176,7 @@ function Login(props) {
                   },
                 }}
                 value={loginValue}
-                onChange={e => setLoginValue(e.target.value)}
+                onChange={(e) => setLoginValue(e.target.value)}
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
@@ -191,12 +191,27 @@ function Login(props) {
                   },
                 }}
                 value={passwordValue}
-                onChange={e => setPasswordValue(e.target.value)}
+                onChange={(e) => setPasswordValue(e.target.value)}
                 margin="normal"
                 placeholder="Password"
                 type="password"
                 fullWidth
               />
+              {/* <TextField
+                id="password_confirm"
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+                value={passwordValue}
+                onChange={(e) => setPasswordValue(e.target.value)}
+                margin="normal"
+                placeholder="Password"
+                type="password"
+                fullWidth
+              /> */}
               <div className={classes.creatingButtonContainer}>
                 {isLoading ? (
                   <CircularProgress size={26} />

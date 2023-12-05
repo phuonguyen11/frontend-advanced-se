@@ -59,10 +59,9 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
       try {
         const loginData = await loginUserAPI(login, password);
         console.log(loginData);
-        if (loginData.code === 200) {
-          console.log(loginData.body.user.role);
-          localStorage.setItem("id_token", loginData.body.user.role);
-          
+        if (!!loginData) {
+          localStorage.setItem("id_token", loginData.accessToken);
+          localStorage.setItem("role", loginData.role);
           dispatch({ type: "LOGIN_SUCCESS" });
           setError(null);
           setIsLoading(false);
