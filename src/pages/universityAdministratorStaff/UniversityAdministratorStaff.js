@@ -6,7 +6,6 @@ import { getProject, updateProjectChecked, getUni, getProjectUnis } from "../../
 export default function UniversityAdministratorStaff() {
   const [projects, setProjectData] = useState([]);
   const [unis, setUnis] = useState([]);
-  const [projectUnis, setProjectUnis] = useState([]);
   const [selectedUni, setSelectedUni] = useState("");
   // const [acceptedProjects, setAcceptedProjects] = useState([]);
   // const [reload, setReload] = useState(1);
@@ -58,21 +57,10 @@ export default function UniversityAdministratorStaff() {
   }
 
   const getAllData = async () => {
-    await Promise.all([getProjectData(), getProjectUnisData(), getUniData()])
+    await Promise.all([getProjectData(), getUniData()])
   }
 
-  async function getProjectUnisData() {
-    try {
-      const result = await getProjectUnis();
-      if (result !== undefined) {
-        setProjectUnis(result.data);
-      }
 
-    } catch (error) {
-      console.error("Error fetching project data", error);
-      throw error; // Re-throw the error to handle it outside if needed
-    }
-  }
 
 
 
@@ -83,15 +71,11 @@ export default function UniversityAdministratorStaff() {
   }, []);
 
   const findUniOfProject = (project) => {
-    const projectData = projectUnis.find(item => item.project_id === project.id)
-    console.log({ projectData })
-    if (projectData) {
-      console.log('findUnis')
-      const uni = unis.find(uniData => uniData.id === projectData.uni_id);
+   
+      const uni = unis.find(uniData => uniData.id === project.uni_id);
       console.log({ unis })
       return uni;
-    }
-    return null;
+
   }
 
   const getFilteredProject = () => {
@@ -99,10 +83,10 @@ export default function UniversityAdministratorStaff() {
       if (selectedUni === "") {
         return project.is_checked === null;
       } else {
-        const uniOfProject = findUniOfProject(project);
-        if (uniOfProject) {
-          console.log('selectedUni', selectedUni, uniOfProject, project, Number(uniOfProject.id) === Number(selectedUni));
-          return project.is_checked === null && Number(uniOfProject.id) === Number(selectedUni);
+        // const uniOfProject = findUniOfProject(project);
+        if (project.uni_id) {
+          // console.log('selectedUni', selectedUni, uniOfProject, project, Number(uniOfProject.id) === Number(selectedUni));
+          return project.is_checked === null && Number(project.uni_id) === Number(selectedUni);
         }
       }
     });
@@ -140,10 +124,11 @@ export default function UniversityAdministratorStaff() {
           <tbody>
             {getFilteredProject().map((project) => {
               const uni = findUniOfProject(project)
-              console.log('project', project, uni)
+              // console.log('project', project, uni)
               return (
                 <tr key={project.id}>
                   <td>{project.name}</td>
+                  {/* <td>{project.uni_id}</td> */}
                   <td>{uni ? uni.name : ""}</td>
                   <td>{project.description}</td>
                   <td>{project.location}</td>
