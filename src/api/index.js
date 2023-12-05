@@ -40,6 +40,23 @@ export const getAbility = async () => {
      return response.data;
 };
 
+export const loginUserAPI = async (email, password) => {
+  try {
+    const response = await axios.post(
+      `https://abc-summer.azurewebsites.net/users/login`,
+      {
+        email: email,
+        password: password,
+      },
+    );
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+
 
 
 export const updateProjectAPI = async (projectData) => {
