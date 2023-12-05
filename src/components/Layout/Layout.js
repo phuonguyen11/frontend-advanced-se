@@ -21,10 +21,10 @@ import Maps from "../../pages/maps";
 import Tables from "../../pages/tables";
 import Icons from "../../pages/icons";
 import Charts from "../../pages/charts";
+import UniversityAdministratorStaff from "../../pages/universityAdministratorStaff";
 
 // context
 import { useLayoutState } from "../../context/LayoutContext";
-import UniversityAdministratorStaff from "../../pages/universityAdministratorStaff/UniversityAdministratorSaff";
 function Layout(props) {
   var classes = useStyles();
 

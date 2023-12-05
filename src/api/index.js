@@ -2,6 +2,20 @@ import axios from "axios";
 
 
 //call api from backend
+export const loginUserAPI = async (email, password) => {
+	try {
+	  const response = await axios.post(`http://localhost:7789/sessions/login`, {
+		email: email,
+		password: password,
+	  });
+	  return response.data;
+	} catch (err) {
+	  console.log(err);
+	}
+  };import axios from "axios";
+
+
+//call api from backend
 export const getProject = async () => {
 	const response = await axios.get(
 		`https://gremer.azurewebsites.net/project/
@@ -30,7 +44,7 @@ export const getAbility = async () => {
 
 export const updateProjectAPI = async (projectData) => {
 	const response = await axios.put(
-		`https://gremer.azurewebsites.net/project/
+		`https://gremer.azurewebsites.net/project
 		`, projectData
 	);
 	return response.data
@@ -63,14 +77,7 @@ export const deleteProject = async (projectId) => {
 	return response.data
 }
 
-export const loginUserAPI = async (email, password) => {
-	try {
-	  const response = await axios.post(`http://localhost:7789/sessions/login`, {
-		email: email,
-		password: password,
-	  });
-	  return response.data;
-	} catch (err) {
-	  console.log(err);
-	}
-  };
+export const getProjectUnis = async () => {
+	const response = await axios.get(`https://gremer.azurewebsites.net/project/project-unis`);
+	return response.data 
+}
