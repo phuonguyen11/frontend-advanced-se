@@ -8,6 +8,7 @@ function userReducer(state, action) {
     case "LOGIN_SUCCESS":
       return { ...state, isAuthenticated: true };
     case "SIGN_OUT_SUCCESS":
+      localStorage.clear();
       return { ...state, isAuthenticated: false };
     default: {
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -70,16 +71,12 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
           localStorage.setItem("user_id", loginData.id);
           localStorage.setItem("uni_id", loginData.uni_id);
 
-
           dispatch({ type: "LOGIN_SUCCESS" });
           setError(null);
           setIsLoading(false);
           history.push("tables");
-
         }
       } catch (err) {
-        localStorage.removeItem("id_token");
-
         // dispatch({ type: "LOGIN_FAILURE" });
         setError(true);
         setIsLoading(false);
