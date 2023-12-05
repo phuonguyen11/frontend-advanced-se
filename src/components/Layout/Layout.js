@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Route,
-  Switch,
-  Redirect,
-  withRouter,
-} from "react-router-dom";
+import { Route, Switch, Redirect, withRouter } from "react-router-dom";
 import classnames from "classnames";
 // styles
 import useStyles from "./styles";

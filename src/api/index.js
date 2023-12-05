@@ -1,6 +1,5 @@
 import axios from "axios";
 
-
 //call api from backend
 export const loginUserAPI = async (email, password) => {
 	try {
@@ -12,10 +11,8 @@ export const loginUserAPI = async (email, password) => {
 	} catch (err) {
 	  console.log(err);
 	}
-  };import axios from "axios";
+  };
 
-
-//call api from backend
 export const getProject = async () => {
 	const response = await axios.get(
 		`https://gremer.azurewebsites.net/project/
