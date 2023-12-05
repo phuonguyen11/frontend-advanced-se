@@ -255,6 +255,19 @@ function Login(props) {
                     console.log(e.target.value);
                     setUserRole(e.target.value);
                   }}
+                  sx={{
+                    color: "#F5B000",
+                    fontSize: "36px",
+                    "&:hover": {
+                      color: "#FFD700",
+                    },
+                  }}
+                  InputProps={{
+                    classes: {
+                      underline: classes.textFieldUnderline,
+                      input: classes.textField,
+                    },
+                  }}
                 >
                   <MenuItem value="0">Student</MenuItem>
                   <MenuItem value="1">Community Leader</MenuItem>
