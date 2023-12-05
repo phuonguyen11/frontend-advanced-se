@@ -62,3 +62,15 @@ export const deleteProject = async (projectId) => {
 	const response = await axios.put(`https://gremer.azurewebsites.net/project/${project_id}/isChecked`, {isChecked});
 	return response.data
 }
+
+export const loginUserAPI = async (email, password) => {
+	try {
+	  const response = await axios.post(`http://localhost:7789/sessions/login`, {
+		email: email,
+		password: password,
+	  });
+	  return response.data;
+	} catch (err) {
+	  console.log(err);
+	}
+  };

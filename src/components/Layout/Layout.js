@@ -43,9 +43,10 @@ function Layout(props) {
           >
             <div className={classes.fakeToolbar} />
             <Switch>
-              <Route path="/app/dashboard" component={Dashboard} />
-              <Route path="/app/typography" component={Typography} />
+              {/* <Route path="/app/dashboard" component={Dashboard} />
+              <Route path="/app/typography" component={Typography} /> */}
               <Route path="/app/tables" component={Tables} />
+
               {/* <Route path="/app/notifications" component={Notifications} /> */}
               <Route path="/app/universityAdministratorStaff" component={UniversityAdministratorStaff} />
               <Route
