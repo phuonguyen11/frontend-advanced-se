@@ -1,8 +1,8 @@
 import React from "react";
-import { loginUserAPI } from "../api/index";
-
+import { loginUserAPI } from "../api";
 var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
+
 function userReducer(state, action) {
   switch (action.type) {
     case "LOGIN_SUCCESS":
@@ -49,6 +49,11 @@ export { UserProvider, useUserState, useUserDispatch, loginUser, signOut };
 
 // ###########################################################
 
+function signOut(dispatch, history) {
+  localStorage.removeItem("id_token");
+  dispatch({ type: "SIGN_OUT_SUCCESS" });
+  history.push("/login");
+}
 function loginUser(dispatch, login, password, history, setIsLoading, setError) {
   setError(false);
   setIsLoading(true);
@@ -62,10 +67,12 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
         if (loginData.code === 200) {
           console.log(loginData.body.user.role);
           localStorage.setItem("id_token", loginData.body.user.role);
-          
+
           dispatch({ type: "LOGIN_SUCCESS" });
           setError(null);
           setIsLoading(false);
+          history.push("tables");
+
         }
       } catch (err) {
         localStorage.removeItem("id_token");
@@ -79,10 +86,4 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
     setError(true);
     setIsLoading(false);
   }
-}
-
-function signOut(dispatch, history) {
-  localStorage.removeItem("id_token");
-  dispatch({ type: "SIGN_OUT_SUCCESS" });
-  history.push("/login");
 }

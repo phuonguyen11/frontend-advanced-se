@@ -24,7 +24,13 @@ const structure = [
   { id: 0, label: 'Dashboard', link: '/app/dashboard', icon: <HomeIcon /> },
   { id: 1, label: 'Typography', link: '/app/typography', icon: <TypographyIcon /> },
   { id: 2, label: 'Tables', link: '/app/tables', icon: <TableIcon /> },
-  { id: 3, label: 'Notifications', link: '/app/notifications', icon: <NotificationsIcon />},
+<<<<<<< HEAD
+  { id: 3, label: "University Administrator Staff", link: "/app/universityAdministratorStaff", icon: <TableIcon /> },
+  // { id: 3, label: 'Notifications', link: '/app/notifications', icon: <NotificationsIcon />},
+=======
+  // { id: 3, label: 'Notifications', link: '/app/notifications', icon: <NotificationsIcon />},
+  { id: 3, label: "University Administrator Staff", link: "/app/universityAdministratorStaff", icon: <TableIcon /> },
+>>>>>>> e52d4579c966226cf986bbd9753a2b09916ac01b
   {
     id: 4,
     label: 'UI Elements',
