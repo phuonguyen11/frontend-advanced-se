@@ -15,5 +15,5 @@ outputs:
   website-url: 
     description: 'The URL of the deployed website.'
 runs:
-  using: 'node18'
+  using: 'node20'
   main: 'main.js'
