@@ -73,7 +73,6 @@ export default function Tables() {
         if (result !== undefined) {
           setProjectData(result);
         }
-
       } catch (error) {
         console.error("Error fetching project data", error);
         throw error;
@@ -81,7 +80,7 @@ export default function Tables() {
     }
     getProjectData();
     getTableData();
-  }, [isEdited]);
+  }, [isEdited, getTableData]);
 
 
   useEffect(() => {

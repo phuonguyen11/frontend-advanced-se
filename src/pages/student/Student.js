@@ -54,10 +54,8 @@ export default function Student() {
   }
 
   useEffect(() => {
-
     getAllData();
-
-  }, []);
+  }, [getAllData]);
 
   const findUniOfProject = (project) => {
 
@@ -111,9 +109,9 @@ export default function Student() {
                   <td>{project.quantity}</td>
                   <td>{new Date(project.start_date).toLocaleDateString()}</td>
                   <td>{new Date(project.end_date).toLocaleDateString()}</td>
-                  <td>{project.is_checked == null ? "Pending" : project.is_checked == true ? "Accepted" : "Rejected"}</td>
+                  <td>{project.is_checked === null ? "Pending" : project.is_checked == true ? "Accepted" : "Rejected"}</td>
                   <td>
-                    {project.is_checked == null ?
+                    {project.is_checked === null ?
                       <>
                         <button disabled={project.is_checked != null} className="accept-btn" onClick={() => handleAccept(project.id)}>
                           Accept
