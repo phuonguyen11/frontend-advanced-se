@@ -14,6 +14,7 @@ import {
   LibraryBooks as LibraryIcon,
   HelpOutline as FAQIcon,
   ArrowBack as ArrowBackIcon,
+  Person
 } from "@material-ui/icons";
 import classNames from 'classnames';
 
@@ -28,14 +29,9 @@ const structure = [
   // { id: 3, label: 'Notifications', link: '/app/notifications', icon: <NotificationsIcon />},
   {
     id: 4,
-    label: 'UI Elements',
-    link: '/app/ui',
-    icon: <UIElementsIcon />,
-    children: [
-      { label: 'Icons', link: '/app/ui/icons' },
-      { label: 'Charts', link: '/app/ui/charts' },
-      { label: 'Maps', link: '/app/ui/maps' },
-    ],
+    label: 'Student',
+    link: '/app/student',
+    icon: <Person />,
   },
   { id: 5, type: 'divider' },
   { id: 6, type: 'title', label: 'HELP' },
