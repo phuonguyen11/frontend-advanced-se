@@ -7,7 +7,6 @@ import MUIDataTable from "mui-datatables";
 
 import PageTitle from "../../components/PageTitle";
 import { getProject, updateProjectAPI, deleteProject, addProject, getUni } from "../../api";
-
 import Modal from 'react-modal';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -62,15 +61,11 @@ export default function Tables() {
   const classes = useStyles();
   const [openAdd, setOpenAdd] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
-  const [selectedUniversity, setSelectedUniversity] = useState('');
-
+  const [selectedUniversity, setSelectedUniversity] = useState(1);
   const handleUniversityChange = (event) => {
-    setSelectedUniversity(event.target.value);
+    const selectedId = parseInt(event.target.value, 10);
+    setSelectedUniversity(selectedId);
   };
-
-
-
-
   useEffect(() => {
     async function getProjectData() {
       try {
@@ -85,7 +80,8 @@ export default function Tables() {
       }
     }
     getProjectData();
-  }, []);
+    getTableData();
+  }, [isEdited]);
 
 
   useEffect(() => {
@@ -102,13 +98,7 @@ export default function Tables() {
       }
     }
     getUniData();
-    console.log(uniData, "aaaaa")
   }, []);
-
-
-
-
-
 
   // const handleRowClick = (rowData, rowMeta) => {
   //   console.log(rowData, rowMeta);
@@ -152,24 +142,24 @@ export default function Tables() {
       name: e.target.name.value,
       description: e.target.description.value,
       location: e.target.location.value,
-      user_id: 1,
-      uni_ids: [selectedUniversity],
+      uni_id: selectedUniversity,
       start_date: e.target.startDate.value,
       end_date: e.target.endDate.value,
       quantity: e.target.capacity.value,
     };
+    console.log(projectData);
     await addProject(projectData);
     setIsEdited(!isEdited);
     setOpenAdd(false);
   };
 
-  const handleDeleteRow = async () => {
+  const handleDeleteRow = async (rowsDeleted) => {
+    const selectedRowData = rowsDeleted.data
     if (selectedRowData.length > 0) {
       try {
         await Promise.all(
           selectedRowData.map(async (item) => {
-            const projectIdToDelete = item[0]; // Assuming your project ID is in the first position
-            console.log(projectIdToDelete)
+            const projectIdToDelete = projectData[item.index].id; // Assuming your project ID is in the first position
             await deleteProject(projectIdToDelete);
             setIsEdited(!isEdited);
           })
@@ -180,10 +170,6 @@ export default function Tables() {
       }
     }
   };
-
-
-
-
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -194,7 +180,6 @@ export default function Tables() {
 
 
   const renderEditModal = () => {
-    console.log('startDate', startDate)
     return (
       <Modal
         isOpen={open}
@@ -227,7 +212,7 @@ export default function Tables() {
                 label="Start Date"
                 value={startDate}
                 onChange={setStartDate}
-                KeyboardButtonProps={{'aria-label': 'change date',}}
+                KeyboardButtonProps={{ 'aria-label': 'change date', }}
               />
             </Grid>
             <Grid item xs={6}>
@@ -240,7 +225,7 @@ export default function Tables() {
                 label="End Date"
                 value={endDate}
                 onChange={setEndDate}
-                KeyboardButtonProps={{'aria-label': 'change date',}}
+                KeyboardButtonProps={{ 'aria-label': 'change date', }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -289,7 +274,7 @@ export default function Tables() {
           variant="outlined"
           margin="normal"
           type="datetime-local"
-          InputLabelProps={{shrink: true,}}
+          InputLabelProps={{ shrink: true, }}
           required
           fullWidth
         />
@@ -299,7 +284,7 @@ export default function Tables() {
           variant="outlined"
           margin="normal"
           type="datetime-local"
-          InputLabelProps={{shrink: true,}}
+          InputLabelProps={{ shrink: true, }}
           required
           fullWidth
         />
@@ -318,7 +303,6 @@ export default function Tables() {
 
 
   const getTableData = () => {
-    console.log()
     return projectData.map(item => {
       return [
         item.name,
@@ -337,7 +321,6 @@ export default function Tables() {
     console.log('metaData', metaData)
     const rowIndex = metaData.rowIndex;
     const data = projectData[rowIndex];
-    console.log({ data })
     setSelectedRowIndex(rowIndex)
     setName(data.name)
     setDescription(data.description)
@@ -349,63 +332,58 @@ export default function Tables() {
   }
   return (
     <>
-      {renderEditModal()}
-      <PageTitle title="Community" />
-      <Grid container spacing={4}>
-        <Grid item xs={12}>
-          <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
-            style={{ marginRight: '10px' }}
-          >Add Project</Button>
+      {localStorage.getItem("role") === "1" ? (
+        <>
+          {renderEditModal()}
+          <PageTitle title="Community" />
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
+                style={{ marginRight: '10px' }}
+              >Add Project</Button>
+              <Modal
+                isOpen={openAdd}
+                onRequestClose={handleCloseAdd}
+              >
+                {AddProjectModal}
+              </Modal>
+            </Grid>
 
-
-          <Modal
-            isOpen={openAdd}
-            onRequestClose={handleCloseAdd}
-          >
-            {AddProjectModal}
-          </Modal>
-        </Grid>
-
-        <Grid item xs={12}>
-          {projectData
-            ?
-            <MUIDataTable
-              title="Project List"
-              data={getTableData()}
-              columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
-                label: "Actions",
-                options: {
-                  customBodyRender: (value, tableMeta, updateValue) => {
-                    return (
-                      <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
-                        Edit
-                      </button>
-                    )
-                  },
-                  onRowsSelect: (currentRowsSelected, allRowsSelected) => {
-                    setSelectedRowData((prev) => [
-                      ...prev,
-                      ...currentRowsSelected.map((selectedRow) => projectData[selectedRow.dataIndex])
-                    ]);
-                    console.log(selectedRowData.length, "hihiihi");
-                  },
-                  onRowsDelete: handleDeleteRow,
-
-                }
-              }]}
-              options={{
-                filterType: "multiselect",
-              }}
-            />
-            :
-            <p><i>Loading...</i></p>}
-        </Grid>
-        {/* <Grid item xs={12}>
+            <Grid item xs={12}>
+              {projectData
+                ?
+                <MUIDataTable
+                  title="Project List"
+                  data={getTableData()}
+                  columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
+                    label: "Actions",
+                    options: {
+                      customBodyRender: (value, tableMeta, updateValue) => {
+                        return (
+                          <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
+                            Edit
+                          </button>
+                        )
+                      },
+                    }
+                  }]}
+                  options={{
+                    filterType: "multiselect",
+                    onRowsDelete: handleDeleteRow,
+                  }}
+                />
+                :
+                <p><i>Loading...</i></p>}
+            </Grid>
+            {/* <Grid item xs={12}>
           <Widget title="Applied Student Table" upperTitle noBodyPadding>
             <Table data={mock.table} />
           </Widget>
         </Grid> */}
-      </Grid>
+          </Grid>
+        </>
+      ) : (<h1>You don't have permission to access this page</h1>)
+      }
     </>
   );
 }
