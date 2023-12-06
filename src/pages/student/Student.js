@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import './styles.css';
 import { useEffect } from "react";
-import { getAllProjectsOfAllUnis, updateProjectChecked, updateApplyProject, getUni } from "../../api";
+import { getAllProjectsOfAllUnis, updateApplyProject, getUni } from "../../api";
 import { Typography } from "@material-ui/core";
 import { getProject } from "../../api";
 
