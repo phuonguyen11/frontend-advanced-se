@@ -80,6 +80,8 @@ export default function UniversityAdministratorStaff() {
 
   return (
     <>
+    {localStorage.getItem("role") === "2" ? (
+    <>
       <div>
         <h1>University</h1>
         <h2>Project List</h2>
@@ -133,6 +135,9 @@ export default function UniversityAdministratorStaff() {
           </tbody>
         </table>
       </div>
+    </>
+    ): (<h1>You don't have permission to access this page</h1>)
+    }
     </>
   );
 };

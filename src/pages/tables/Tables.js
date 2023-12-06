@@ -352,6 +352,8 @@ export default function Tables() {
   }
   return (
     <>
+    {localStorage.getItem("role") === "1" ? (
+    <>
       {renderEditModal()}
       <PageTitle title="Community" />
       <Grid container spacing={4}>
@@ -359,8 +361,6 @@ export default function Tables() {
           <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
             style={{ marginRight: '10px' }}
           >Add Project</Button>
-
-
           <Modal
             isOpen={openAdd}
             onRequestClose={handleCloseAdd}
@@ -402,5 +402,8 @@ export default function Tables() {
         </Grid> */}
       </Grid>
     </>
+    ) : (<h1>You don't have permission to access this page</h1>)
+    }
+    </>  
   );
 }
