@@ -7,7 +7,6 @@ import MUIDataTable from "mui-datatables";
 
 import PageTitle from "../../components/PageTitle";
 import { getProject, updateProjectAPI, deleteProject, addProject, getUni } from "../../api";
-
 import Modal from 'react-modal';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -62,16 +61,11 @@ export default function Tables() {
   const classes = useStyles();
   const [openAdd, setOpenAdd] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
-  const [selectedUniversity, setSelectedUniversity] = useState('');
-
+  const [selectedUniversity, setSelectedUniversity] = useState(1);
   const handleUniversityChange = (event) => {
     const selectedId = parseInt(event.target.value, 10);
     setSelectedUniversity(selectedId);
   };
-
-
-
-
   useEffect(() => {
     async function getProjectData() {
       try {
@@ -86,7 +80,8 @@ export default function Tables() {
       }
     }
     getProjectData();
-  }, []);
+    getTableData();
+  }, [isEdited]);
 
 
   useEffect(() => {
@@ -103,13 +98,7 @@ export default function Tables() {
       }
     }
     getUniData();
-    console.log(uniData, "aaaaa")
   }, []);
-
-
-
-
-
 
   // const handleRowClick = (rowData, rowMeta) => {
   //   console.log(rowData, rowMeta);
@@ -153,26 +142,24 @@ export default function Tables() {
       name: e.target.name.value,
       description: e.target.description.value,
       location: e.target.location.value,
-      user_id: 1,
       uni_id: selectedUniversity,
       start_date: e.target.startDate.value,
       end_date: e.target.endDate.value,
       quantity: e.target.capacity.value,
     };
+    console.log(projectData);
     await addProject(projectData);
     setIsEdited(!isEdited);
     setOpenAdd(false);
   };
 
   const handleDeleteRow = async (rowsDeleted) => {
-
     const selectedRowData = rowsDeleted.data
     if (selectedRowData.length > 0) {
       try {
         await Promise.all(
           selectedRowData.map(async (item) => {
             const projectIdToDelete = projectData[item.index].id; // Assuming your project ID is in the first position
-            console.log(projectIdToDelete)
             await deleteProject(projectIdToDelete);
             setIsEdited(!isEdited);
           })
@@ -183,10 +170,6 @@ export default function Tables() {
       }
     }
   };
-
-
-
-
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -197,7 +180,6 @@ export default function Tables() {
 
 
   const renderEditModal = () => {
-    console.log('startDate', startDate)
     return (
       <Modal
         isOpen={open}
@@ -321,7 +303,6 @@ export default function Tables() {
 
 
   const getTableData = () => {
-    console.log()
     return projectData.map(item => {
       return [
         item.name,
@@ -340,7 +321,6 @@ export default function Tables() {
     console.log('metaData', metaData)
     const rowIndex = metaData.rowIndex;
     const data = projectData[rowIndex];
-    console.log({ data })
     setSelectedRowIndex(rowIndex)
     setName(data.name)
     setDescription(data.description)
@@ -382,14 +362,15 @@ export default function Tables() {
                     return (
                       <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
                         Edit
-                      </button>
+                      </button>                    
+                      
                     )
                   },
                 }
               }]}
               options={{
                 filterType: "multiselect",
-                onRowsDelete: handleDeleteRow,
+                onRowsDelete: (e) => handleDeleteRow(e),
               }}
             />
             :

@@ -111,7 +111,6 @@ export default function Notification({ variant, ...props }) {
   );
 }
 
-// ####################################################################
 function getIconByType(type = "offer") {
   return typesIcons[type];
 }
