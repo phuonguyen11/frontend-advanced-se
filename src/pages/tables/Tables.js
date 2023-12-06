@@ -349,63 +349,68 @@ export default function Tables() {
   }
   return (
     <>
+    {localStorage.getItem("role") === "1" ? (
+    <>
       {renderEditModal()}
-      <PageTitle title="Community" />
-      <Grid container spacing={4}>
-        <Grid item xs={12}>
-          <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
-            style={{ marginRight: '10px' }}
-          >Add Project</Button>
+        <PageTitle title="Community" />
+        <Grid container spacing={4}>
+          <Grid item xs={12}>
+            <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
+              style={{ marginRight: '10px' }}
+            >Add Project</Button>
 
 
-          <Modal
-            isOpen={openAdd}
-            onRequestClose={handleCloseAdd}
-          >
-            {AddProjectModal}
-          </Modal>
-        </Grid>
+            <Modal
+              isOpen={openAdd}
+              onRequestClose={handleCloseAdd}
+            >
+              {AddProjectModal}
+            </Modal>
+          </Grid>
 
-        <Grid item xs={12}>
-          {projectData
-            ?
-            <MUIDataTable
-              title="Project List"
-              data={getTableData()}
-              columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
-                label: "Actions",
-                options: {
-                  customBodyRender: (value, tableMeta, updateValue) => {
-                    return (
-                      <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
-                        Edit
-                      </button>
-                    )
-                  },
-                  onRowsSelect: (currentRowsSelected, allRowsSelected) => {
-                    setSelectedRowData((prev) => [
-                      ...prev,
-                      ...currentRowsSelected.map((selectedRow) => projectData[selectedRow.dataIndex])
-                    ]);
-                    console.log(selectedRowData.length, "hihiihi");
-                  },
-                  onRowsDelete: handleDeleteRow,
+          <Grid item xs={12}>
+            {projectData
+              ?
+              <MUIDataTable
+                title="Project List"
+                data={getTableData()}
+                columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
+                  label: "Actions",
+                  options: {
+                    customBodyRender: (value, tableMeta, updateValue) => {
+                      return (
+                        <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
+                          Edit
+                        </button>
+                      )
+                    },
+                    onRowsSelect: (currentRowsSelected, allRowsSelected) => {
+                      setSelectedRowData((prev) => [
+                        ...prev,
+                        ...currentRowsSelected.map((selectedRow) => projectData[selectedRow.dataIndex])
+                      ]);
+                      console.log(selectedRowData.length, "hihiihi");
+                    },
+                    onRowsDelete: handleDeleteRow,
 
-                }
-              }]}
-              options={{
-                filterType: "multiselect",
-              }}
-            />
-            :
-            <p><i>Loading...</i></p>}
-        </Grid>
-        {/* <Grid item xs={12}>
-          <Widget title="Applied Student Table" upperTitle noBodyPadding>
-            <Table data={mock.table} />
-          </Widget>
-        </Grid> */}
-      </Grid>
+                  }
+                }]}
+                options={{
+                  filterType: "multiselect",
+                }}
+              />
+              :
+              <p><i>Loading...</i></p>}
+          </Grid>
+          {/* <Grid item xs={12}>
+            <Widget title="Applied Student Table" upperTitle noBodyPadding>
+              <Table data={mock.table} />
+            </Widget>
+          </Grid> */}
+        </Grid>    
     </>
+    ) : (<h1>You don't have permission to access this page</h1>)
+    }
+    </>  
   );
 }
