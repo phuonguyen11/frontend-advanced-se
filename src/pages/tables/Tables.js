@@ -65,7 +65,8 @@ export default function Tables() {
   const [selectedUniversity, setSelectedUniversity] = useState('');
 
   const handleUniversityChange = (event) => {
-    setSelectedUniversity(event.target.value);
+    const selectedId = parseInt(event.target.value, 10);
+    setSelectedUniversity(selectedId);
   };
 
 
@@ -153,7 +154,7 @@ export default function Tables() {
       description: e.target.description.value,
       location: e.target.location.value,
       user_id: 1,
-      uni_ids: [selectedUniversity],
+      uni_id: selectedUniversity,
       start_date: e.target.startDate.value,
       end_date: e.target.endDate.value,
       quantity: e.target.capacity.value,
@@ -163,12 +164,14 @@ export default function Tables() {
     setOpenAdd(false);
   };
 
-  const handleDeleteRow = async () => {
+  const handleDeleteRow = async (rowsDeleted) => {
+
+    const selectedRowData = rowsDeleted.data
     if (selectedRowData.length > 0) {
       try {
         await Promise.all(
           selectedRowData.map(async (item) => {
-            const projectIdToDelete = item[0]; // Assuming your project ID is in the first position
+            const projectIdToDelete = projectData[item.index].id; // Assuming your project ID is in the first position
             console.log(projectIdToDelete)
             await deleteProject(projectIdToDelete);
             setIsEdited(!isEdited);
@@ -352,62 +355,52 @@ export default function Tables() {
     {localStorage.getItem("role") === "1" ? (
     <>
       {renderEditModal()}
-        <PageTitle title="Community" />
-        <Grid container spacing={4}>
-          <Grid item xs={12}>
-            <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
-              style={{ marginRight: '10px' }}
-            >Add Project</Button>
+      <PageTitle title="Community" />
+      <Grid container spacing={4}>
+        <Grid item xs={12}>
+          <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
+            style={{ marginRight: '10px' }}
+          >Add Project</Button>
+          <Modal
+            isOpen={openAdd}
+            onRequestClose={handleCloseAdd}
+          >
+            {AddProjectModal}
+          </Modal>
+        </Grid>
 
-
-            <Modal
-              isOpen={openAdd}
-              onRequestClose={handleCloseAdd}
-            >
-              {AddProjectModal}
-            </Modal>
-          </Grid>
-
-          <Grid item xs={12}>
-            {projectData
-              ?
-              <MUIDataTable
-                title="Project List"
-                data={getTableData()}
-                columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
-                  label: "Actions",
-                  options: {
-                    customBodyRender: (value, tableMeta, updateValue) => {
-                      return (
-                        <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
-                          Edit
-                        </button>
-                      )
-                    },
-                    onRowsSelect: (currentRowsSelected, allRowsSelected) => {
-                      setSelectedRowData((prev) => [
-                        ...prev,
-                        ...currentRowsSelected.map((selectedRow) => projectData[selectedRow.dataIndex])
-                      ]);
-                      console.log(selectedRowData.length, "hihiihi");
-                    },
-                    onRowsDelete: handleDeleteRow,
-
-                  }
-                }]}
-                options={{
-                  filterType: "multiselect",
-                }}
-              />
-              :
-              <p><i>Loading...</i></p>}
-          </Grid>
-          {/* <Grid item xs={12}>
-            <Widget title="Applied Student Table" upperTitle noBodyPadding>
-              <Table data={mock.table} />
-            </Widget>
-          </Grid> */}
-        </Grid>    
+        <Grid item xs={12}>
+          {projectData
+            ?
+            <MUIDataTable
+              title="Project List"
+              data={getTableData()}
+              columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
+                label: "Actions",
+                options: {
+                  customBodyRender: (value, tableMeta, updateValue) => {
+                    return (
+                      <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
+                        Edit
+                      </button>
+                    )
+                  },
+                }
+              }]}
+              options={{
+                filterType: "multiselect",
+                onRowsDelete: handleDeleteRow,
+              }}
+            />
+            :
+            <p><i>Loading...</i></p>}
+        </Grid>
+        {/* <Grid item xs={12}>
+          <Widget title="Applied Student Table" upperTitle noBodyPadding>
+            <Table data={mock.table} />
+          </Widget>
+        </Grid> */}
+      </Grid>
     </>
     ) : (<h1>You don't have permission to access this page</h1>)
     }

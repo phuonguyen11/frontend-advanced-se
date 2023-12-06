@@ -1,20 +1,12 @@
 import React, { useState } from "react";
 import './UniversityAdminstratorStaff.css';
 import { useEffect } from "react";
-import { getProject, updateProjectChecked, getUni, getProjectUnis } from "../../api";
+import { getAllProjectsOfAllUnis, updateProjectChecked, getUni } from "../../api";
 
 export default function UniversityAdministratorStaff() {
   const [projects, setProjectData] = useState([]);
   const [unis, setUnis] = useState([]);
-  const [projectUnis, setProjectUnis] = useState([]);
-  const [selectedUni, setSelectedUni] = useState("");
-  // const [acceptedProjects, setAcceptedProjects] = useState([]);
-  // const [reload, setReload] = useState(1);
-  // const [rejectedProjects, setRejectedProjects] = useState([]);
-
-  const handleUniFilterChange = (event) => {
-    setSelectedUni(event.target.value);
-  };
+  const uniOfStaff = localStorage.getItem("uni_id");
 
 
   const handleAccept = async (projectId) => {
@@ -33,7 +25,7 @@ export default function UniversityAdministratorStaff() {
 
   async function getProjectData() {
     try {
-      const result = await getProject();
+      const result = await getAllProjectsOfAllUnis();
       if (result !== undefined) {
         setProjectData(result);
       }
@@ -58,21 +50,10 @@ export default function UniversityAdministratorStaff() {
   }
 
   const getAllData = async () => {
-    await Promise.all([getProjectData(), getProjectUnisData(), getUniData()])
+    await Promise.all([getProjectData(), getUniData()])
   }
 
-  async function getProjectUnisData() {
-    try {
-      const result = await getProjectUnis();
-      if (result !== undefined) {
-        setProjectUnis(result.data);
-      }
 
-    } catch (error) {
-      console.error("Error fetching project data", error);
-      throw error; // Re-throw the error to handle it outside if needed
-    }
-  }
 
 
 
@@ -83,28 +64,17 @@ export default function UniversityAdministratorStaff() {
   }, []);
 
   const findUniOfProject = (project) => {
-    const projectData = projectUnis.find(item => item.project_id === project.id)
-    console.log({ projectData })
-    if (projectData) {
-      console.log('findUnis')
-      const uni = unis.find(uniData => uniData.id === projectData.uni_id);
-      console.log({ unis })
-      return uni;
-    }
-    return null;
+
+    const uni = unis.find(uniData => uniData.id === project.uni_id);
+    console.log({ unis })
+    return uni;
+
   }
 
   const getFilteredProject = () => {
+    console.log(uniOfStaff);
     return projects.filter((project) => {
-      if (selectedUni === "") {
-        return project.is_checked === null;
-      } else {
-        const uniOfProject = findUniOfProject(project);
-        if (uniOfProject) {
-          console.log('selectedUni', selectedUni, uniOfProject, project, Number(uniOfProject.id) === Number(selectedUni));
-          return project.is_checked === null && Number(uniOfProject.id) === Number(selectedUni);
-        }
-      }
+      return Number(project.uni_id) === Number(uniOfStaff);
     });
   }
 
@@ -115,20 +85,10 @@ export default function UniversityAdministratorStaff() {
       <div>
         <h1>University</h1>
         <h2>Project List</h2>
-        <div>
-          <label>Filter by Uni:</label>
-          <select value={selectedUni} onChange={handleUniFilterChange}>
-            <option value="">All</option>
-            {unis.map((uni) => (
-              <option key={uni.id} value={uni.id}>
-                {uni.name}
-              </option>
-            ))}
-          </select>
-        </div>
         <table className="project-table">
           <thead>
             <tr>
+              <th>STT</th>
               <th style={{ width: '17%' }}>Name</th>
               <th style={{ width: '10%' }}>Uni</th>
               <th style={{ width: '25%' }}>Description</th>
@@ -136,29 +96,37 @@ export default function UniversityAdministratorStaff() {
               <th style={{ width: '5%' }}>Quantity</th>
               <th style={{ width: '8%' }}>Start Date</th>
               <th style={{ width: '8%' }}>End Date</th>
+              <th>Status</th>
               <th style={{ width: '25%' }}>Action</th>
             </tr>
           </thead>
           <tbody>
-            {getFilteredProject().map((project) => {
+            {getFilteredProject().map((project, index) => {
               const uni = findUniOfProject(project)
-              console.log('project', project, uni)
+              // console.log('project', project, uni)
               return (
                 <tr key={project.id}>
+                  <td>{index + 1}</td>
                   <td>{project.name}</td>
+                  {/* <td>{project.uni_id}</td> */}
                   <td>{uni ? uni.name : ""}</td>
                   <td>{project.description}</td>
                   <td>{project.location}</td>
                   <td>{project.quantity}</td>
                   <td>{new Date(project.start_date).toLocaleDateString()}</td>
                   <td>{new Date(project.end_date).toLocaleDateString()}</td>
+                  <td>{project.is_checked == null ? "Pending" : project.is_checked == true ? "Accepted" : "Rejected"}</td>
                   <td>
-                    <button className="accept-btn" onClick={() => handleAccept(project.id)}>
-                      Accept
-                    </button>
-                    <button className="reject-btn" onClick={() => handleReject(project.id)}>
-                      Reject
-                    </button>
+                    {project.is_checked == null ?
+                      <>
+                        <button disabled={project.is_checked != null} className="accept-btn" onClick={() => handleAccept(project.id)}>
+                          Accept
+                        </button>
+                        <button disabled={project.is_checked != null} className="reject-btn" onClick={() => handleReject(project.id)}>
+                          Reject
+                        </button>
+                      </>
+                      : ""}
                   </td>
                 </tr>
               )
