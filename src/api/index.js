@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //call api from backend
-const getAccessTokenHeader = () => {
+export const getAccessTokenHeader = () => {
   return {
     "access-token": localStorage.getItem("id_token"),
   };
@@ -134,7 +134,15 @@ export const updateProjectChecked = async (project_id, isChecked) => {
   return response.data;
 };
 
-// export const getProjectUnis = async () => {
-// 	const response = await axios.get(`https://abc-summer.azurewebsites.net/project/project-unis`);
-// 	return response.data
-// }
+export const updateApplyProject = async (project_id) => {
+  const response = await axios.post(
+    `https://abc-summer.azurewebsites.net/project-user`,
+    {project_id},
+    {
+      headers: getAccessTokenHeader(),
+    },
+  );
+  return response.data;
+};
+
+
