@@ -14,7 +14,7 @@ import {
   MenuItem,
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
-import classnames from "classnames";
+// import classnames from "classnames";
 
 // styles
 import useStyles from "./styles";
@@ -191,6 +191,44 @@ function Login(props) {
                   Something is wrong with your login or password :(
                 </Typography>
               </Fade>
+              <FormControl
+                fullWidth
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+              >
+                <InputLabel id="role-label">Your role</InputLabel>
+                <Select
+                  labelId="role"
+                  id="demo-simple-select"
+                  value={userRole}
+                  label="Your role"
+                  onChange={(e) => {
+                    console.log(`userRole = ${e.target.value}`);
+                    setUserRole(e.target.value);
+                  }}
+                  sx={{
+                    color: "#F5B000",
+                    fontSize: "36px",
+                    "&:hover": {
+                      color: "#FFD700",
+                    },
+                  }}
+                  InputProps={{
+                    classes: {
+                      underline: classes.textFieldUnderline,
+                      input: classes.textField,
+                    },
+                  }}
+                >
+                  <MenuItem value="0">Student</MenuItem>
+                  <MenuItem value="1">Community Leader</MenuItem>
+                  <MenuItem value="2">University Administration Staff</MenuItem>
+                </Select>
+              </FormControl>
               <TextField
                 id="name"
                 InputProps={{
@@ -236,58 +274,36 @@ function Login(props) {
                 type="password"
                 fullWidth
               />
-              <FormControl
-                fullWidth
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-              >
-                <InputLabel id="role-label">Your role</InputLabel>
-                <Select
-                  labelId="role"
-                  id="demo-simple-select"
-                  value={userRole}
-                  label="Your role"
-                  onChange={(e) => {
-                    console.log(e.target.value);
-                    setUserRole(e.target.value);
+
+              {+userRole !== 1 && (
+                <FormControl
+                  fullWidth
+                  InputProps={{
+                    classes: {
+                      underline: classes.textFieldUnderline,
+                      input: classes.textField,
+                    },
                   }}
                 >
-                  <MenuItem value="0">Student</MenuItem>
-                  <MenuItem value="1">Community Leader</MenuItem>
-                  <MenuItem value="2">University Administration Staff</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl
-                fullWidth
-                InputProps={{
-                  classes: {
-                    underline: classes.textFieldUnderline,
-                    input: classes.textField,
-                  },
-                }}
-              >
-                <InputLabel id="university-label">Your university</InputLabel>
-                <Select
-                  labelId="userversity"
-                  id="university"
-                  value={userUni}
-                  label="Your university"
-                  onChange={(e) => {
-                    console.log(e.target.value);
-                    setUserUni(e.target.value);
-                  }}
-                >
-                  {uniList.map((uni) => (
-                    <MenuItem key={uni.id} value={uni.id}>
-                      {uni.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  <InputLabel id="university-label">Your university</InputLabel>
+                  <Select
+                    labelId="userversity"
+                    id="university"
+                    value={userUni}
+                    label="Your university"
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                      setUserUni(e.target.value);
+                    }}
+                  >
+                    {uniList.map((uni) => (
+                      <MenuItem key={uni.id} value={uni.id}>
+                        {uni.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
               <div className={classes.creatingButtonContainer}>
                 {isLoading ? (
                   <CircularProgress size={26} />
@@ -310,7 +326,7 @@ function Login(props) {
                         !passwordValue ||
                         !nameValue ||
                         !userRole ||
-                        !userUni
+                        (+userRole !== 1 && !userUni)
                       }
                       size="large"
                       variant="contained"

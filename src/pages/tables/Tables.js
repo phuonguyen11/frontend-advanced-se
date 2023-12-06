@@ -57,7 +57,7 @@ export default function Tables() {
   const [selectedRowIndex, setSelectedRowIndex] = useState(0);
   const [startDate, setStartDate] = useState(new Date('2014-08-18T21:11:54'))
   const [endDate, setEndDate] = useState(new Date('2014-08-18T21:11:54'))
-  const [selectedRowData, setSelectedRowData] = useState([]);
+  // const [selectedRowData, setSelectedRowData] = useState([]);
   const classes = useStyles();
   const [openAdd, setOpenAdd] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
@@ -66,6 +66,19 @@ export default function Tables() {
     const selectedId = parseInt(event.target.value, 10);
     setSelectedUniversity(selectedId);
   };
+
+  const getTableData = () => {
+    return projectData.map((item) => {
+      return [
+        item.name,
+        item.description,
+        item.location,
+        item.quantity,
+        new Date(item.start_date).toLocaleDateString(),
+        new Date(item.end_date).toLocaleDateString(),
+      ];
+    });
+  };
   useEffect(() => {
     async function getProjectData() {
       try {
@@ -73,7 +86,6 @@ export default function Tables() {
         if (result !== undefined) {
           setProjectData(result);
         }
-
       } catch (error) {
         console.error("Error fetching project data", error);
         throw error;
@@ -81,7 +93,8 @@ export default function Tables() {
     }
     getProjectData();
     getTableData();
-  }, [isEdited]);
+    // [isEdited, getTableData]; useEffect dependencies
+  } );
 
 
   useEffect(() => {
@@ -164,7 +177,7 @@ export default function Tables() {
             setIsEdited(!isEdited);
           })
         );
-        setSelectedRowData([]);
+        // setSelectedRowData([]);
       } catch (error) {
         console.error('Error deleting projects:', error);
       }
@@ -212,7 +225,7 @@ export default function Tables() {
                 label="Start Date"
                 value={startDate}
                 onChange={setStartDate}
-                KeyboardButtonProps={{'aria-label': 'change date',}}
+                KeyboardButtonProps={{ 'aria-label': 'change date', }}
               />
             </Grid>
             <Grid item xs={6}>
@@ -225,7 +238,7 @@ export default function Tables() {
                 label="End Date"
                 value={endDate}
                 onChange={setEndDate}
-                KeyboardButtonProps={{'aria-label': 'change date',}}
+                KeyboardButtonProps={{ 'aria-label': 'change date', }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -274,7 +287,7 @@ export default function Tables() {
           variant="outlined"
           margin="normal"
           type="datetime-local"
-          InputLabelProps={{shrink: true,}}
+          InputLabelProps={{ shrink: true, }}
           required
           fullWidth
         />
@@ -284,7 +297,7 @@ export default function Tables() {
           variant="outlined"
           margin="normal"
           type="datetime-local"
-          InputLabelProps={{shrink: true,}}
+          InputLabelProps={{ shrink: true, }}
           required
           fullWidth
         />
@@ -302,18 +315,7 @@ export default function Tables() {
   );
 
 
-  const getTableData = () => {
-    return projectData.map(item => {
-      return [
-        item.name,
-        item.description,
-        item.location,
-        item.quantity,
-        new Date(item.start_date).toLocaleDateString(),
-        new Date(item.end_date).toLocaleDateString(),
-      ]
-    })
-  }
+  
 
   const openModalToEdit = (value, metaData) => {
     console.log('openModalToEdit')
@@ -332,59 +334,58 @@ export default function Tables() {
   }
   return (
     <>
-    {localStorage.getItem("role") === "1" ? (
-    <>
-      {renderEditModal()}
-      <PageTitle title="Community" />
-      <Grid container spacing={4}>
-        <Grid item xs={12}>
-          <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
-            style={{ marginRight: '10px' }}
-          >Add Project</Button>
-          <Modal
-            isOpen={openAdd}
-            onRequestClose={handleCloseAdd}
-          >
-            {AddProjectModal}
-          </Modal>
-        </Grid>
+      {localStorage.getItem("role") === "1" ? (
+        <>
+          {renderEditModal()}
+          <PageTitle title="Community" />
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
+                style={{ marginRight: '10px' }}
+              >Add Project</Button>
+              <Modal
+                isOpen={openAdd}
+                onRequestClose={handleCloseAdd}
+              >
+                {AddProjectModal}
+              </Modal>
+            </Grid>
 
-        <Grid item xs={12}>
-          {projectData
-            ?
-            <MUIDataTable
-              title="Project List"
-              data={getTableData()}
-              columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
-                label: "Actions",
-                options: {
-                  customBodyRender: (value, tableMeta, updateValue) => {
-                    return (
-                      <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
-                        Edit
-                      </button>                    
-                      
-                    )
-                  },
-                }
-              }]}
-              options={{
-                filterType: "multiselect",
-                onRowsDelete: (e) => handleDeleteRow(e),
-              }}
-            />
-            :
-            <p><i>Loading...</i></p>}
-        </Grid>
-        {/* <Grid item xs={12}>
+            <Grid item xs={12}>
+              {projectData
+                ?
+                <MUIDataTable
+                  title="Project List"
+                  data={getTableData()}
+                  columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
+                    label: "Actions",
+                    options: {
+                      customBodyRender: (value, tableMeta, updateValue) => {
+                        return (
+                          <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
+                            Edit
+                          </button>
+                        )
+                      },
+                    }
+                  }]}
+                  options={{
+                    filterType: "multiselect",
+                    onRowsDelete: handleDeleteRow,
+                  }}
+                />
+                :
+                <p><i>Loading...</i></p>}
+            </Grid>
+            {/* <Grid item xs={12}>
           <Widget title="Applied Student Table" upperTitle noBodyPadding>
             <Table data={mock.table} />
           </Widget>
         </Grid> */}
-      </Grid>
+          </Grid>
+        </>
+      ) : (<h1>You don't have permission to access this page</h1>)
+      }
     </>
-    ) : (<h1>You don't have permission to access this page</h1>)
-    }
-    </>  
   );
 }
