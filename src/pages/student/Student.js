@@ -51,7 +51,7 @@ export default function Student() {
   }
   useEffect(() => {
     getAllData();
-  }, []);
+  });
 
   return (
     <>
