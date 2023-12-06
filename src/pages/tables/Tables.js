@@ -93,7 +93,8 @@ export default function Tables() {
     }
     getProjectData();
     getTableData();
-  }, [isEdited, getTableData]);
+    // [isEdited, getTableData]; useEffect dependencies
+  } );
 
 
   useEffect(() => {
