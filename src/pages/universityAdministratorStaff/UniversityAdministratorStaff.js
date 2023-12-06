@@ -51,7 +51,6 @@ export default function UniversityAdministratorStaff() {
   const getAllData = async () => {
     await Promise.all([getProjectData(), getUniData()])
   }
-
   useEffect(() => {
 
     getAllData();
