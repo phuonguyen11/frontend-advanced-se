@@ -57,7 +57,7 @@ export default function Tables() {
   const [selectedRowIndex, setSelectedRowIndex] = useState(0);
   const [startDate, setStartDate] = useState(new Date('2014-08-18T21:11:54'))
   const [endDate, setEndDate] = useState(new Date('2014-08-18T21:11:54'))
-  const [selectedRowData, setSelectedRowData] = useState([]);
+  // const [selectedRowData, setSelectedRowData] = useState([]);
   const classes = useStyles();
   const [openAdd, setOpenAdd] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
@@ -65,6 +65,19 @@ export default function Tables() {
   const handleUniversityChange = (event) => {
     const selectedId = parseInt(event.target.value, 10);
     setSelectedUniversity(selectedId);
+  };
+
+  const getTableData = () => {
+    return projectData.map((item) => {
+      return [
+        item.name,
+        item.description,
+        item.location,
+        item.quantity,
+        new Date(item.start_date).toLocaleDateString(),
+        new Date(item.end_date).toLocaleDateString(),
+      ];
+    });
   };
   useEffect(() => {
     async function getProjectData() {
@@ -163,7 +176,7 @@ export default function Tables() {
             setIsEdited(!isEdited);
           })
         );
-        setSelectedRowData([]);
+        // setSelectedRowData([]);
       } catch (error) {
         console.error('Error deleting projects:', error);
       }
@@ -301,18 +314,7 @@ export default function Tables() {
   );
 
 
-  const getTableData = () => {
-    return projectData.map(item => {
-      return [
-        item.name,
-        item.description,
-        item.location,
-        item.quantity,
-        new Date(item.start_date).toLocaleDateString(),
-        new Date(item.end_date).toLocaleDateString(),
-      ]
-    })
-  }
+  
 
   const openModalToEdit = (value, metaData) => {
     console.log('openModalToEdit')

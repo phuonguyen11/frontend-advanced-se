@@ -53,7 +53,7 @@ export default function UniversityAdministratorStaff() {
   }
   useEffect(() => {
     getAllData();
-  }, [getAllData]);
+  });
 
   const findUniOfProject = (project) => {
     const uni = unis.find(uniData => uniData.id === project.uni_id);
@@ -103,7 +103,7 @@ export default function UniversityAdministratorStaff() {
                       <td>{project.quantity}</td>
                       <td>{new Date(project.start_date).toLocaleDateString()}</td>
                       <td>{new Date(project.end_date).toLocaleDateString()}</td>
-                      <td>{project.is_checked === null ? "Pending" : project.is_checked == true ? "Accepted" : "Rejected"}</td>
+                      <td>{project.is_checked === null ? "Pending" : project.is_checked === true ? "Accepted" : "Rejected"}</td>
                       <td>
                         {project.is_checked === null ?
                           <>
