@@ -52,10 +52,8 @@ export default function UniversityAdministratorStaff() {
     await Promise.all([getProjectData(), getUniData()])
   }
   useEffect(() => {
-
     getAllData();
-
-  }, []);
+  }, [getAllData]);
 
   const findUniOfProject = (project) => {
     const uni = unis.find(uniData => uniData.id === project.uni_id);
@@ -105,9 +103,9 @@ export default function UniversityAdministratorStaff() {
                       <td>{project.quantity}</td>
                       <td>{new Date(project.start_date).toLocaleDateString()}</td>
                       <td>{new Date(project.end_date).toLocaleDateString()}</td>
-                      <td>{project.is_checked == null ? "Pending" : project.is_checked == true ? "Accepted" : "Rejected"}</td>
+                      <td>{project.is_checked === null ? "Pending" : project.is_checked == true ? "Accepted" : "Rejected"}</td>
                       <td>
-                        {project.is_checked == null ?
+                        {project.is_checked === null ?
                           <>
                             <button disabled={project.is_checked != null} className="accept-btn" onClick={() => handleAccept(project.id)}>
                               Accept
