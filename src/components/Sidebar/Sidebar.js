@@ -10,7 +10,13 @@ import {
   LibraryBooks as LibraryIcon,
   HelpOutline as FAQIcon,
   ArrowBack as ArrowBackIcon,
+  Person,
+  School,
+  SupervisorAccount,
+  SupervisedUserCircle
 } from "@material-ui/icons";
+
+
 import { useTheme } from "@material-ui/styles";
 import { withRouter } from "react-router-dom";
 import classNames from "classnames";
@@ -37,8 +43,8 @@ const structure = [
     link: "/app/typography",
     icon: <TypographyIcon />,
   },
-  { id: 2, label: "Tables", link: "/app/tables", icon: <TableIcon /> },
-  { id: 3, label: "University Administrator Staff", link: "/app/universityAdministratorStaff", icon: <TableIcon /> },
+  { id: 2, label: "Community Leader", link: "/app/tables", icon: <SupervisedUserCircle /> },
+  { id: 3, label: "University Administrator Staff", link: "/app/universityAdministratorStaff", icon: <School /> },
   // {
   //   id: 3,
   //   label: "Notifications",
