@@ -1,0 +1,64 @@
+name: Deployment
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Load & Cache dependencies
+        uses: ./.github/actions/cache-dependencies #path starts at root level of project
+      - name: Test code
+        id: run-tests
+        run: yarn run test
+      - name: Upload test report
+        if: failure() && steps.run-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: test.json
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Load & Cache dependencies
+        uses: ./.github/actions/cache-dependencies #path starts at root level of project
+      - name: Build website
+        run: yarn run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Get build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-files
+          path: ./dist
+      - name: Output contents
+        run: ls
+      - name: Deploy site (inject js code here)
+        id: deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        uses: ./.github/actions/deploy-s3
+        with: 
+          bucket: ase-green-summer-fe
+          dist-folder: ./dist
+          # bucket-region: ap-southeast-2
+      - name: Output information
+        run: |
+          echo "Live URL: ${{steps.deploy.outputs.website-url}}"
