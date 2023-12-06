@@ -70,12 +70,17 @@ function loginUser(dispatch, login, password, history, setIsLoading, setError) {
           localStorage.setItem("role", loginData.role);
           localStorage.setItem("user_id", loginData.id);
           localStorage.setItem("uni_id", loginData.uni_id);
-
           dispatch({ type: "LOGIN_SUCCESS" });
           setError(null);
           setIsLoading(false);
+          if(loginData.role === 0)
+          history.push("student");
+          if(loginData.role === 1)
           history.push("tables");
-        }
+          if(loginData.role === 2)
+          history.push("universityAdministratorStaff");
+
+      }
       } catch (err) {
         // dispatch({ type: "LOGIN_FAILURE" });
         setError(true);
