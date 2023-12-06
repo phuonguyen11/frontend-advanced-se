@@ -34,7 +34,7 @@
     "tinycolor2": "^1.4.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test --env=jest-environment-jsdom-sixteen --transformIgnorePatterns \"node_modules/(?!axios)/\"",
     "eject": "react-scripts eject",
