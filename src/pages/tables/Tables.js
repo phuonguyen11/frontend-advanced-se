@@ -230,7 +230,7 @@ export default function Tables() {
                 label="Start Date"
                 value={startDate}
                 onChange={setStartDate}
-                KeyboardButtonProps={{'aria-label': 'change date',}}
+                KeyboardButtonProps={{ 'aria-label': 'change date', }}
               />
             </Grid>
             <Grid item xs={6}>
@@ -243,7 +243,7 @@ export default function Tables() {
                 label="End Date"
                 value={endDate}
                 onChange={setEndDate}
-                KeyboardButtonProps={{'aria-label': 'change date',}}
+                KeyboardButtonProps={{ 'aria-label': 'change date', }}
               />
             </Grid>
             <Grid item xs={12}>
@@ -292,7 +292,7 @@ export default function Tables() {
           variant="outlined"
           margin="normal"
           type="datetime-local"
-          InputLabelProps={{shrink: true,}}
+          InputLabelProps={{ shrink: true, }}
           required
           fullWidth
         />
@@ -302,7 +302,7 @@ export default function Tables() {
           variant="outlined"
           margin="normal"
           type="datetime-local"
-          InputLabelProps={{shrink: true,}}
+          InputLabelProps={{ shrink: true, }}
           required
           fullWidth
         />
@@ -352,58 +352,58 @@ export default function Tables() {
   }
   return (
     <>
-    {localStorage.getItem("role") === "1" ? (
-    <>
-      {renderEditModal()}
-      <PageTitle title="Community" />
-      <Grid container spacing={4}>
-        <Grid item xs={12}>
-          <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
-            style={{ marginRight: '10px' }}
-          >Add Project</Button>
-          <Modal
-            isOpen={openAdd}
-            onRequestClose={handleCloseAdd}
-          >
-            {AddProjectModal}
-          </Modal>
-        </Grid>
+      {localStorage.getItem("role") === "1" ? (
+        <>
+          {renderEditModal()}
+          <PageTitle title="Community" />
+          <Grid container spacing={4}>
+            <Grid item xs={12}>
+              <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
+                style={{ marginRight: '10px' }}
+              >Add Project</Button>
+              <Modal
+                isOpen={openAdd}
+                onRequestClose={handleCloseAdd}
+              >
+                {AddProjectModal}
+              </Modal>
+            </Grid>
 
-        <Grid item xs={12}>
-          {projectData
-            ?
-            <MUIDataTable
-              title="Project List"
-              data={getTableData()}
-              columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
-                label: "Actions",
-                options: {
-                  customBodyRender: (value, tableMeta, updateValue) => {
-                    return (
-                      <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
-                        Edit
-                      </button>
-                    )
-                  },
-                }
-              }]}
-              options={{
-                filterType: "multiselect",
-                onRowsDelete: handleDeleteRow,
-              }}
-            />
-            :
-            <p><i>Loading...</i></p>}
-        </Grid>
-        {/* <Grid item xs={12}>
+            <Grid item xs={12}>
+              {projectData
+                ?
+                <MUIDataTable
+                  title="Project List"
+                  data={getTableData()}
+                  columns={["Name", "Description", "Location", "Quantity", "Start Date", "End Date", {
+                    label: "Actions",
+                    options: {
+                      customBodyRender: (value, tableMeta, updateValue) => {
+                        return (
+                          <button className="accept-btn" onClick={() => openModalToEdit(value, tableMeta)}>
+                            Edit
+                          </button>
+                        )
+                      },
+                    }
+                  }]}
+                  options={{
+                    filterType: "multiselect",
+                    onRowsDelete: handleDeleteRow,
+                  }}
+                />
+                :
+                <p><i>Loading...</i></p>}
+            </Grid>
+            {/* <Grid item xs={12}>
           <Widget title="Applied Student Table" upperTitle noBodyPadding>
             <Table data={mock.table} />
           </Widget>
         </Grid> */}
-      </Grid>
+          </Grid>
+        </>
+      ) : (<h1>You don't have permission to access this page</h1>)
+      }
     </>
-    ) : (<h1>You don't have permission to access this page</h1>)
-    }
-    </>  
   );
 }
