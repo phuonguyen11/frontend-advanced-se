@@ -65,7 +65,8 @@ export default function Tables() {
   const [selectedUniversity, setSelectedUniversity] = useState('');
 
   const handleUniversityChange = (event) => {
-    setSelectedUniversity(event.target.value);
+    const selectedId = parseInt(event.target.value, 10);
+    setSelectedUniversity(selectedId);
   };
 
 
@@ -153,7 +154,7 @@ export default function Tables() {
       description: e.target.description.value,
       location: e.target.location.value,
       user_id: 1,
-      uni_ids: [selectedUniversity],
+      uni_id: selectedUniversity,
       start_date: e.target.startDate.value,
       end_date: e.target.endDate.value,
       quantity: e.target.capacity.value,
@@ -163,12 +164,14 @@ export default function Tables() {
     setOpenAdd(false);
   };
 
-  const handleDeleteRow = async () => {
+  const handleDeleteRow = async (rowsDeleted) => {
+
+    const selectedRowData = rowsDeleted.data
     if (selectedRowData.length > 0) {
       try {
         await Promise.all(
           selectedRowData.map(async (item) => {
-            const projectIdToDelete = item[0]; // Assuming your project ID is in the first position
+            const projectIdToDelete = projectData[item.index].id; // Assuming your project ID is in the first position
             console.log(projectIdToDelete)
             await deleteProject(projectIdToDelete);
             setIsEdited(!isEdited);
@@ -382,19 +385,11 @@ export default function Tables() {
                       </button>
                     )
                   },
-                  onRowsSelect: (currentRowsSelected, allRowsSelected) => {
-                    setSelectedRowData((prev) => [
-                      ...prev,
-                      ...currentRowsSelected.map((selectedRow) => projectData[selectedRow.dataIndex])
-                    ]);
-                    console.log(selectedRowData.length, "hihiihi");
-                  },
-                  onRowsDelete: handleDeleteRow,
-
                 }
               }]}
               options={{
                 filterType: "multiselect",
+                onRowsDelete: handleDeleteRow,
               }}
             />
             :
