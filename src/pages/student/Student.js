@@ -16,7 +16,6 @@ export default function Student() {
       if (result !== undefined) {
         setUnis(result);
       }
-
     } catch (error) {
       console.error("Error fetching project data", error);
       throw error; // Re-throw the error to handle it outside if needed
@@ -24,13 +23,10 @@ export default function Student() {
   }
 
   const handleAccept = async (projectId) => {
-    const res = await updateApplyProject(projectId);
-    console.log(res);
-    await getProjectData();
+    await Promise.all([updateApplyProject(projectId), getProjectData()]);
   };
   const findUniOfProject = (project) => {
     const uni = unis.find(uniData => uniData.id === project.uni_id);
-    console.log({ unis })
     return uni;
   }
 
@@ -42,14 +38,13 @@ export default function Student() {
       setProjectApplied(appliedProjectIds);
       setProjectData(result);
     } catch (error) {
-      console.error("Error fetching project data", error);
       throw error; // Re-throw the error to handle it outside if needed
     }
   }
-  const getAllData = async () => {
-    await Promise.all([getProjectData(), getUniData()])
-  }
   useEffect(() => {
+    const getAllData = async () => {
+      await Promise.all([getProjectData(), getUniData()])
+    }  
     getAllData();
   });
 
