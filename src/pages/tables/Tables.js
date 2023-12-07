@@ -122,28 +122,28 @@ export default function Tables() {
     }
     getUniData();
   }, []);
+
   useEffect(() => {
     async function getStudentOfProjectData() {
       try {
           const results = await Promise.all(projectData.map(async (item) => {
+          
           const result = await getStudentOfProject(item.id);
           return result;
         }));
         const test = results.filter(item => item.length > 0)
         setStudentData(test.flat());
-        console.log(results);
       } catch (error) {
         console.error("Error fetching student data", error);
         throw error; // Re-throw the error to handle it outside if needed
       }
     }
     getStudentOfProjectData();
-  }, [studentView]);
+  }, [studentView, studentData]);
 
 
 
     const handleSubmit = async () => {
-    console.log('handle submit')
     try {
       const data = projectData[selectedRowIndex];
       const updatedData = {
@@ -433,12 +433,12 @@ export default function Tables() {
                             {student.is_checked === null ?
                               <>
                                 <button disabled={student.is_checked != null} className="accept-btn" 
-                                onClick={() => handleAccept(student.project_id,student.id)}
+                                onClick={() => handleAccept(student.project_id,22)}
                                 >
                                   Accept
                                 </button>
                                 <button disabled={student.is_checked != null} className="reject-btn" 
-                                onClick={() => handleReject(student.project_id,student.id)}
+                                onClick={() => handleReject(student.project_id,22)}
                                 >
                                   Reject
                                 </button>

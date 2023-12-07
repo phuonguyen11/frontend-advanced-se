@@ -99,6 +99,7 @@ export const deleteProject = async (projectId) => {
         headers: getAccessTokenHeader(),
       },
     );
+    return response;
   } catch (error) {
     console.error("Error deleting project:", error);
     throw error;
@@ -115,6 +116,8 @@ export const addProject = async (projectData) => {
         headers: getAccessTokenHeader(),
       },
     );
+    return response;
+
   } catch (error) {
     console.error("Error creating project");
     throw error;
@@ -132,10 +135,10 @@ export const updateProjectChecked = async (project_id, isChecked) => {
   return response.data;
 };
 
-export const updateStudentRegisterd = async (project_id, user_id, isChecked) => {
+export const updateStudentRegisterd = async (project_id, user_id, is_checked) => {
   const response = await axios.put(
     `https://abc-summer.azurewebsites.net/project-user`,
-    { project_id, user_id, isChecked },
+    { project_id, user_id, is_checked },
     {
       headers: getAccessTokenHeader(),
     },
