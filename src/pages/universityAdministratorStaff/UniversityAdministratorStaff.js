@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import './UniversityAdminstratorStaff.css';
 import { useEffect } from "react";
-import { getAllProjectsOfAllUnis, updateProjectChecked, getUni } from "../../api";
+import { getAllProjectsOfAllUnis, updateProjectChecked, getUni, getStudentOfProject } from "../../api";
 
 export default function UniversityAdministratorStaff() {
   const [projects, setProjectData] = useState([]);
@@ -49,7 +49,7 @@ export default function UniversityAdministratorStaff() {
   }
 
   const getAllData = async () => {
-    await Promise.all([getProjectData(), getUniData()])
+    await Promise.all([getProjectData(), getUniData(), getStudentOfProject()])
   }
   useEffect(() => {
     getAllData();
@@ -96,7 +96,7 @@ export default function UniversityAdministratorStaff() {
                     <tr key={project.id}>
                       <td>{index + 1}</td>
                       <td>{project.name}</td>
-                      {/* <td>{project.uni_id}</td> */}
+                      <td>{project.uni_id}</td>
                       <td>{uni ? uni.name : ""}</td>
                       <td>{project.description}</td>
                       <td>{project.location}</td>
@@ -107,10 +107,14 @@ export default function UniversityAdministratorStaff() {
                       <td>
                         {project.is_checked === null ?
                           <>
-                            <button disabled={project.is_checked != null} className="accept-btn" onClick={() => handleAccept(project.id)}>
+                            <button disabled={project.is_checked != null} className="accept-btn" 
+                            onClick={() => handleAccept(project.id)}
+                            >
                               Accept
                             </button>
-                            <button disabled={project.is_checked != null} className="reject-btn" onClick={() => handleReject(project.id)}>
+                            <button disabled={project.is_checked != null} className="reject-btn" 
+                            onClick={() => handleReject(project.id)}
+                            >
                               Reject
                             </button>
                           </>

@@ -2,7 +2,7 @@ import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import React from "react";
 import { useState, useEffect } from "react";
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid, Typography, makeStyles } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 
 import PageTitle from "../../components/PageTitle";
@@ -15,7 +15,8 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-
+import { getStudentOfProject } from '../../api';
+import { updateStudentRegisterd } from '../../api';
 const useStyles = makeStyles((theme) => ({
   paper: {
     position: 'absolute',
@@ -30,6 +31,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const handleAccept = async (projectId, userId) => {
+  console.log(projectId, userId)
+  const res = await updateStudentRegisterd(projectId, userId, true);
+  console.log(res);
+  await getStudentOfProject();
+};
+
+const handleReject = async (projectId, userId) => {
+  const res = await updateStudentRegisterd(projectId, userId, false);
+  console.log(res);
+  await getStudentOfProject();
+};
 
 const customStyles = {
   content: {
@@ -42,14 +55,10 @@ const customStyles = {
   },
 };
 
-// Modal.setAppElement('#yourAppElement');
-
-
-
 export default function Tables() {
   const [projectData, setProjectData] = useState([]);
   const [uniData, setUniData] = useState([]);
-
+  const [studentData, setStudentData] = useState([]);
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
@@ -57,9 +66,10 @@ export default function Tables() {
   const [selectedRowIndex, setSelectedRowIndex] = useState(0);
   const [startDate, setStartDate] = useState(new Date('2014-08-18T21:11:54'))
   const [endDate, setEndDate] = useState(new Date('2014-08-18T21:11:54'))
-  // const [selectedRowData, setSelectedRowData] = useState([]);
   const classes = useStyles();
   const [openAdd, setOpenAdd] = useState(false);
+  const [studentView, setStudentView] = useState(false);
+  const [open, setOpen] = React.useState(false);
   const [isEdited, setIsEdited] = useState(false);
   const [selectedUniversity, setSelectedUniversity] = useState(1);
   const handleUniversityChange = (event) => {
@@ -112,12 +122,27 @@ export default function Tables() {
     }
     getUniData();
   }, []);
+  useEffect(() => {
+    async function getStudentOfProjectData() {
+      try {
+          const results = await Promise.all(projectData.map(async (item) => {
+          const result = await getStudentOfProject(item.id);
+          return result;
+        }));
+        const test = results.filter(item => item.length > 0)
+        setStudentData(test.flat());
+        console.log(results);
+      } catch (error) {
+        console.error("Error fetching student data", error);
+        throw error; // Re-throw the error to handle it outside if needed
+      }
+    }
+    getStudentOfProjectData();
+  }, [studentView]);
 
-  // const handleRowClick = (rowData, rowMeta) => {
-  //   console.log(rowData, rowMeta);
-  // };
 
-  const handleSubmit = async () => {
+
+    const handleSubmit = async () => {
     console.log('handle submit')
     try {
       const data = projectData[selectedRowIndex];
@@ -150,7 +175,6 @@ export default function Tables() {
 
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
-    console.log(selectedUniversity);
     const projectData = {
       name: e.target.name.value,
       description: e.target.description.value,
@@ -160,7 +184,6 @@ export default function Tables() {
       end_date: e.target.endDate.value,
       quantity: e.target.capacity.value,
     };
-    console.log(projectData);
     await addProject(projectData);
     setIsEdited(!isEdited);
     setOpenAdd(false);
@@ -183,7 +206,6 @@ export default function Tables() {
       }
     }
   };
-  const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleCloseAdd = () => {
@@ -314,9 +336,6 @@ export default function Tables() {
     </div>
   );
 
-
-  
-
   const openModalToEdit = (value, metaData) => {
     console.log('openModalToEdit')
     console.log('value', value)
@@ -332,6 +351,11 @@ export default function Tables() {
     setEndDate(new Date(data.end_date))
     handleOpen();
   }
+  const findUniOfStudent = (id) => {
+    const uni = uniData.find(item => item.id === id);
+    return uni;
+  }
+
   return (
     <>
       {localStorage.getItem("role") === "1" ? (
@@ -343,6 +367,10 @@ export default function Tables() {
               <Button variant="contained" color="secondary" onClick={() => { setOpenAdd(true); }}
                 style={{ marginRight: '10px' }}
               >Add Project</Button>
+            <Button variant="contained" color="primary" onClick={() => { setStudentView(!studentView); }}
+                style={{ marginRight: '10px' }}
+              >Student-based View</Button>
+
               <Modal
                 isOpen={openAdd}
                 onRequestClose={handleCloseAdd}
@@ -352,7 +380,7 @@ export default function Tables() {
             </Grid>
 
             <Grid item xs={12}>
-              {projectData
+              {projectData && !studentView
                 ?
                 <MUIDataTable
                   title="Project List"
@@ -374,8 +402,57 @@ export default function Tables() {
                     onRowsDelete: handleDeleteRow,
                   }}
                 />
-                :
-                <p><i>Loading...</i></p>}
+                :(studentData && studentView)?
+                <div>
+                <Typography>Registered Student</Typography>
+                <table className="project-table">
+                  <thead>
+                    <tr>
+                      <th>STT</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>University</th>
+                      <th>Registered Project</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {studentData.map((student, index) => {
+                      const uni = findUniOfStudent(student.uni_id)
+                      const nameOfProject = projectData.filter(item => item.id === student.project_id)[0].name
+                      return (
+                        <tr key={student.id}>
+                          <td>{index + 1}</td>
+                          <td>{student.name}</td>
+                          <td>{student.email}</td>
+                          <td>{uni ? uni.name : ""}</td>
+                          <td>{nameOfProject}</td>
+                          <td>{student.is_checked === null ? "Pending" : student.is_checked === true ? "Accepted" : "Rejected"}</td>
+                          <td>
+                            {student.is_checked === null ?
+                              <>
+                                <button disabled={student.is_checked != null} className="accept-btn" 
+                                onClick={() => handleAccept(student.project_id,student.id)}
+                                >
+                                  Accept
+                                </button>
+                                <button disabled={student.is_checked != null} className="reject-btn" 
+                                onClick={() => handleReject(student.project_id,student.id)}
+                                >
+                                  Reject
+                                </button>
+                              </>
+                              : ""}
+                          </td>
+                        </tr>
+                      )
+                    }
+                    )}
+                  </tbody>
+                </table>
+              </div>
+                :<p><i>Loading...</i></p>}
             </Grid>
             {/* <Grid item xs={12}>
           <Widget title="Applied Student Table" upperTitle noBodyPadding>
