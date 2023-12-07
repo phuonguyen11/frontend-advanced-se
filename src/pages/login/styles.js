@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/styles";
 
-export default makeStyles(theme => ({
+export default makeStyles((theme) => ({
   container: {
     height: "100vh",
     width: "100vw",
@@ -12,7 +12,7 @@ export default makeStyles(theme => ({
     left: 0,
   },
   logotypeContainer: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette[primary].main,
     width: "60%",
     height: "100%",
     display: "flex",
