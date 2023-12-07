@@ -15,6 +15,9 @@ jobs:
       - name: Test code
         id: run-tests
         run: yarn run test
+      - name: Stop test
+        run: q
+        shell: bash 
       - name: Upload test report
         if: failure() && steps.run-tests.outcome == 'failure'
         uses: actions/upload-artifact@v3
