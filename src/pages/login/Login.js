@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   CircularProgress,
@@ -8,9 +8,13 @@ import {
   Tab,
   TextField,
   Fade,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import { withRouter } from "react-router-dom";
-import classnames from "classnames";
+// import classnames from "classnames";
 
 // styles
 import useStyles from "./styles";
@@ -18,9 +22,9 @@ import useStyles from "./styles";
 // logo
 import logo from "./logo.svg";
 import google from "../../images/google.svg";
-
 // context
 import { useUserDispatch, loginUser } from "../../context/UserContext";
+import { registerUserAPI, getUni } from "../../api";
 
 function Login(props) {
   var classes = useStyles();
@@ -32,15 +36,51 @@ function Login(props) {
   var [isLoading, setIsLoading] = useState(false);
   var [error, setError] = useState(null);
   var [activeTabId, setActiveTabId] = useState(0);
-  var [nameValue, setNameValue] = useState("");
-  var [loginValue, setLoginValue] = useState("");
+  var [nameValue, setNameValue] = useState(""); //full name
+  var [loginValue, setLoginValue] = useState(""); // email address
   var [passwordValue, setPasswordValue] = useState("");
-
+  var [userRole, setUserRole] = useState(null);
+  var [userUni, setUserUni] = useState(null);
+  var [uniList, setUniList] = useState([]);
+  var [isSuccess, setIsSuccess] = useState(false);
+  useEffect(() => {
+    const getUniList = async () => {
+      try {
+        const uniData = await getUni();
+        // console.log(`uniData`, uniData);
+        setUniList(uniData);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getUniList();
+    // console.log(`uniList`, uniList);
+  }, []);
+  const submitHandler = async () => {
+    setError(false);
+    setIsLoading(true);
+    try {
+      await registerUserAPI({
+        email: loginValue,
+        password: passwordValue,
+        name: nameValue,
+        role: userRole,
+        uni_id: userUni,
+      });
+      setError(null);
+      setIsLoading(false);
+      setIsSuccess(true);
+    } catch (err) {
+      console.log(err);
+      setError(true);
+      setIsLoading(false);
+    }
+  };
   return (
-    <Grid container className={classes.container}>
+    <Grid data-testid="login-1" container className={classes.container} >
       <div className={classes.logotypeContainer}>
         <img src={logo} alt="logo" className={classes.logotypeImage} />
-        <Typography className={classes.logotypeText}>Material Admin</Typography>
+        <Typography className={classes.logotypeText}>ABC TEAM</Typography>
       </div>
       <div className={classes.formContainer}>
         <div className={classes.form}>
@@ -82,7 +122,7 @@ function Login(props) {
                   },
                 }}
                 value={loginValue}
-                onChange={e => setLoginValue(e.target.value)}
+                onChange={(e) => setLoginValue(e.target.value)}
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
@@ -97,7 +137,7 @@ function Login(props) {
                   },
                 }}
                 value={passwordValue}
-                onChange={e => setPasswordValue(e.target.value)}
+                onChange={(e) => setPasswordValue(e.target.value)}
                 margin="normal"
                 placeholder="Password"
                 type="password"
@@ -151,6 +191,44 @@ function Login(props) {
                   Something is wrong with your login or password :(
                 </Typography>
               </Fade>
+              <FormControl
+                fullWidth
+                InputProps={{
+                  classes: {
+                    underline: classes.textFieldUnderline,
+                    input: classes.textField,
+                  },
+                }}
+              >
+                <InputLabel id="role-label">Your role</InputLabel>
+                <Select
+                  labelId="role"
+                  id="demo-simple-select"
+                  value={userRole}
+                  label="Your role"
+                  onChange={(e) => {
+                    console.log(`userRole = ${e.target.value}`);
+                    setUserRole(e.target.value);
+                  }}
+                  sx={{
+                    color: "#F5B000",
+                    fontSize: "36px",
+                    "&:hover": {
+                      color: "#FFD700",
+                    },
+                  }}
+                  InputProps={{
+                    classes: {
+                      underline: classes.textFieldUnderline,
+                      input: classes.textField,
+                    },
+                  }}
+                >
+                  <MenuItem value="0">Student</MenuItem>
+                  <MenuItem value="1">Community Leader</MenuItem>
+                  <MenuItem value="2">University Administration Staff</MenuItem>
+                </Select>
+              </FormControl>
               <TextField
                 id="name"
                 InputProps={{
@@ -160,7 +238,7 @@ function Login(props) {
                   },
                 }}
                 value={nameValue}
-                onChange={e => setNameValue(e.target.value)}
+                onChange={(e) => setNameValue(e.target.value)}
                 margin="normal"
                 placeholder="Full Name"
                 type="email"
@@ -175,7 +253,7 @@ function Login(props) {
                   },
                 }}
                 value={loginValue}
-                onChange={e => setLoginValue(e.target.value)}
+                onChange={(e) => setLoginValue(e.target.value)}
                 margin="normal"
                 placeholder="Email Adress"
                 type="email"
@@ -190,43 +268,86 @@ function Login(props) {
                   },
                 }}
                 value={passwordValue}
-                onChange={e => setPasswordValue(e.target.value)}
+                onChange={(e) => setPasswordValue(e.target.value)}
                 margin="normal"
                 placeholder="Password"
                 type="password"
                 fullWidth
               />
+
+              {+userRole !== 1 && (
+                <FormControl
+                  fullWidth
+                  InputProps={{
+                    classes: {
+                      underline: classes.textFieldUnderline,
+                      input: classes.textField,
+                    },
+                  }}
+                >
+                  <InputLabel id="university-label">Your university</InputLabel>
+                  <Select
+                    labelId="userversity"
+                    id="university"
+                    value={userUni}
+                    label="Your university"
+                    onChange={(e) => {
+                      console.log(e.target.value);
+                      setUserUni(e.target.value);
+                    }}
+                  >
+                    {uniList.map((uni) => (
+                      <MenuItem key={uni.id} value={uni.id}>
+                        {uni.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
               <div className={classes.creatingButtonContainer}>
                 {isLoading ? (
                   <CircularProgress size={26} />
                 ) : (
-                  <Button
-                    onClick={() =>
-                      loginUser(
-                        userDispatch,
-                        loginValue,
-                        passwordValue,
-                        props.history,
-                        setIsLoading,
-                        setError,
-                      )
-                    }
-                    disabled={
-                      loginValue.length === 0 ||
-                      passwordValue.length === 0 ||
-                      nameValue.length === 0
-                    }
-                    size="large"
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    className={classes.createAccountButton}
-                  >
-                    Create your account
-                  </Button>
+                  <React.Fragment>
+                    <Button
+                      onClick={submitHandler}
+                      // onClick={() =>
+                      //   loginUser(
+                      //     userDispatch,
+                      //     loginValue,
+                      //     passwordValue,
+                      //     props.history,
+                      //     setIsLoading,
+                      //     setError,
+                      //   )
+                      // }
+                      disabled={
+                        !loginValue ||
+                        !passwordValue ||
+                        !nameValue ||
+                        !userRole ||
+                        (+userRole !== 1 && !userUni)
+                      }
+                      size="large"
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      className={classes.createAccountButton}
+                    >
+                      Create your account
+                    </Button>
+
+                    {isSuccess && (
+                      <div>
+                        <Typography variant="subtitle2" align="center">
+                          Register successfully!
+                        </Typography>
+                      </div>
+                    )}
+                  </React.Fragment>
                 )}
               </div>
-              <div className={classes.formDividerContainer}>
+              {/* <div className={classes.formDividerContainer}>
                 <div className={classes.formDivider} />
                 <Typography className={classes.formDividerWord}>or</Typography>
                 <div className={classes.formDivider} />
@@ -240,12 +361,12 @@ function Login(props) {
               >
                 <img src={google} alt="google" className={classes.googleIcon} />
                 &nbsp;Sign in with Google
-              </Button>
+              </Button> */}
             </React.Fragment>
           )}
         </div>
         <Typography color="primary" className={classes.copyright}>
-          © 2014-2019 Flatlogic, LLC. All rights reserved.
+          © 2023 ABC TEAM. All rights reserved.
         </Typography>
       </div>
     </Grid>

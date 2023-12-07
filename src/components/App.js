@@ -15,14 +15,15 @@ export default function App() {
   // global
   var { isAuthenticated } = useUserState();
 
+
   return (
     <HashRouter>
       <Switch>
-        <Route exact path="/" render={() => <Redirect to="/app/dashboard" />} />
+        <Route exact path="/" render={() => <Redirect to="/app/login" />} />
         <Route
           exact
           path="/app"
-          render={() => <Redirect to="/app/dashboard" />}
+          render={() => <Redirect to="/app/login" />}
         />
         <PrivateRoute path="/app" component={Layout} />
         <PublicRoute path="/login" component={Login} />
