@@ -163,7 +163,7 @@ export default function Tables() {
     }
     getStudentOfProjectData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [studentView, projectData]);
+  }, [studentView]);
 
   const handleSubmit = async () => {
     try {
