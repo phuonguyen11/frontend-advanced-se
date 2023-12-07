@@ -87,7 +87,8 @@ export default function Student() {
                         <button className="accept-btn" onClick={() => handleAccept(project.id)}>
                           Apply
                         </button>
-                    :<Typography style={{color:"red"}}>Applied</Typography>}
+                    :(
+                      project.is_checked === true && projectApplied.includes(project.id))?<Typography style={{color:"red"}}>Applied</Typography> : <Typography style={{color:"blue"}}>Cannot apply now</Typography>}
                   </td>
                 </tr>
               )
