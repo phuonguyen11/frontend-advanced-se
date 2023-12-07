@@ -123,23 +123,24 @@ export default function Tables() {
     getUniData();
   }, []);
 
-  useEffect(() => {
-    async function getStudentOfProjectData() {
-      try {
-          const results = await Promise.all(projectData.map(async (item) => {
-          
-          const result = await getStudentOfProject(item.id);
-          return result;
-        }));
-        const test = results.filter(item => item.length > 0)
-        setStudentData(test.flat());
-      } catch (error) {
-        console.error("Error fetching student data", error);
-        throw error; // Re-throw the error to handle it outside if needed
-      }
+  async function getStudentOfProjectData() {
+    try {
+        const results = await Promise.all(projectData.map(async (item) => {
+        
+        const result = await getStudentOfProject(item.id);
+        return result;
+      }));
+      const test = results.filter(item => item.length > 0)
+      setStudentData(test.flat());
+    } catch (error) {
+      console.error("Error fetching student data", error);
+      throw error; // Re-throw the error to handle it outside if needed
     }
+  }
+
+  useEffect(() => {
     getStudentOfProjectData();
-  }, [studentView, studentData]);
+  });
 
 
 
