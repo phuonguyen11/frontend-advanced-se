@@ -77,7 +77,7 @@ function Login(props) {
     }
   };
   return (
-    <Grid container className={classes.container}>
+    <Grid data-testid="login-1" container className={classes.container} >
       <div className={classes.logotypeContainer}>
         <img src={logo} alt="logo" className={classes.logotypeImage} />
         <Typography className={classes.logotypeText}>ABC TEAM</Typography>
